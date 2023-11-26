@@ -1,0 +1,152 @@
+
+  table{
+	width:100%;
+	table-layout: fixed;
+  }
+  .tbl-header{
+	background-color: #222;
+	margin: 0 20px;
+   }
+  .tbl-content{
+	height:300px;
+	overflow-x:auto;
+	margin-top: 0px;
+	border: 1px solid #222;
+	margin: 0 20px;
+	margin-bottom: 50px;
+  }
+  th{
+	padding: 20px 15px;
+	text-align: left;
+	font-weight: 500;
+	font-size: 13px;
+	color: #fff;
+	text-transform: uppercase;
+	text-align: center;
+  }
+  td{
+	padding: 15px;
+	text-align: left;
+	vertical-align:middle;
+	font-weight: 300;
+	font-size: 16px;
+	color: black;
+	border-bottom: solid 1px #222;
+	text-align: center;
+  }
+  .change-account{
+	width: 20px;
+	cursor: pointer;
+  }
+  
+  
+  /* follow me template */
+  .made-with-love {
+	margin-top: 40px;
+	padding: 10px;
+	clear: left;
+	text-align: center;
+	font-size: 10px;
+	font-family: arial;
+	color: #fff;
+  }
+  .made-with-love i {
+	font-style: normal;
+	color: #F50057;
+	font-size: 14px;
+	position: relative;
+	top: 2px;
+  }
+  .made-with-love a {
+	color: #fff;
+	text-decoration: none;
+  }
+  .made-with-love a:hover {
+	text-decoration: underline;
+  }
+  
+  
+  /* for custom scrollbar for webkit browser*/
+  
+  ::-webkit-scrollbar {
+    width: 12px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: #444;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: #888;
+		border-radius: 20px;
+		border: 3px solid #444;
+	}
+
+  /* td:nth-child(1), th:nth-child(1){
+	width: 150px;
+  }
+  td:nth-child(2), th:nth-child(2){
+	width: 150px;
+  }
+  td:nth-child(3), th:nth-child(3){
+	width: 60px;
+  }
+  td:nth-child(4), th:nth-child(4){
+	width: 120px;
+  }
+  td:nth-child(6), th:nth-child(6){
+	width: 80px;
+  } */
+  td{
+	word-wrap: break-word;
+  }
+  /* td:last-child, th:last-child{
+	width: 100px;
+  }  */
+  .table-balance{
+	width: 80px;
+  }
+  .table-username{
+	width: 140px;
+  }
+  .table-birthday{
+	width: 80px;
+  }
+  .table-created{
+	width: 110px;
+  }
+  .table-amount-orders{
+	width: 50px;
+  }
+  .table-phone{
+	width: 100px;
+  }
+  .table-status{
+	width: 50px;
+  }
+  .table-edit{
+	width: 100px;
+  }
+  .table-edit-block{
+	display: flex;
+	gap: 30px;
+	justify-content: center;
+  }
+  tr:hover{
+	background-color: rgba(0,0,0,0.1);
+  }
+  tr:hover .change-account-input{
+	background-color: rgba(0,0,0,0);
+  }
+  /* td:nth-child(2){
+	width: 80px;
+  }
+  td:nth-child(3){
+	width: 80px;
+  }
+  td:nth-child(4){
+	width: 80px;
+  }
+  td:nth-child(5){
+	width: 80px;
+  } */

@@ -1,0 +1,21 @@
+{
+  "name": "candy-store",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test-server": "cd ./Server && npm test",
+    "client": "cd ./Client && npm start",
+    "server": "cd ./Server && npm start",
+    "server-test": "cd ./Server && npm run start-test",
+    "setup":"cd ./Client && npm i && cd ../Server && npm i && cd ../../"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.irkat.ru/20069/coursework.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+  }
+}

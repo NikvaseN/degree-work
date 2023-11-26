@@ -1,0 +1,7 @@
+/project/Client/node_modules
+/project/Client/.env
+
+/project/Server/node_modules
+/project/Server/.env
+/project/Server/.env.test
+/project/Server/.env.dev

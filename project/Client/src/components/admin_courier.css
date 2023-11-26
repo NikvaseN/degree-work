@@ -1,0 +1,123 @@
+.header-admin{
+    display: flex;
+    width: calc(100% - 220px - 120px);
+    height: 60px;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 500 !important;
+    position: fixed;
+    padding: 0px 60px;
+	color:white;
+    align-items: center;
+	justify-content: space-between;
+    position: fixed;
+    top: 0px;
+	transition: .3s;
+}
+.header-admin-navbar{
+	display: flex;
+	gap: 25px;
+}
+.admin-links{
+	/* position: absolute; */
+	display: flex;
+	gap: 40px;
+}
+.lk-section{
+    width: 100%;
+    /* height: calc(100vh - 60px); */
+}
+
+.lk-section-item{
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.lk-section-item.main{
+    display: flex;
+    align-items: center;
+	justify-content: center;
+	position: relative;
+	gap: 200px;
+	min-height: calc(100vh - 60px);
+	/* overflow: hidden; */
+	/* background-color: #222222; */
+	/* color: #d1d1d1; */
+	/* border-left: 3px solid #2F2F2F; */
+}
+.refresh-stats{
+	top: 20px;
+	right: 20px;
+	position: absolute;
+	width: 35px;
+	height: 35px;
+	cursor: pointer;
+	transition: .8s;
+}
+.refresh-stats.start{
+	transform: rotate(-180deg);
+}
+/* .refresh-stats:hover{
+	transform: rotate(180deg);
+} */
+.selection-main-block{
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	gap: 50px;
+	background-color: #272727;
+	padding: 50px;
+	color: #fff;
+	border-radius: 2em;
+	position: relative;
+}
+
+.lk-section-item.main>h3{
+    margin-top: 80px;
+}
+
+.info-block{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+}
+.info-block>h3{
+	font-size: 20px;
+}
+.progress-container {
+	height: 0.8rem;
+	width: 20rem;
+	border-radius: 0.4rem;
+
+	background: #505050;
+}
+
+.progress-container .progress {
+	height: 100%;
+	width: 0;
+	border-radius: 0.4rem;
+	/* margin-left: -2px; */
+	background: #ff4754;
+	transition: width 0.8s ease;
+}
+
+
+@media (max-width: 1400px){
+	.lk-section-item.main{
+		gap: 100px;
+	}
+}
+
+@media (max-width: 1250px){
+	.lk-section-item.main{
+		gap: 40px;
+	}
+}
+
+@media (max-width: 1150px){
+	.lk-section-item.main{
+		flex-direction: column;
+		padding: 50px 0;
+	}
+}

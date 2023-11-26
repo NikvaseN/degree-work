@@ -1,0 +1,46 @@
+.header-img.candies{
+	background-image: url(../img/Header_candies.png);
+}
+.item-candies{
+	height: 490px;
+	width: 325px;
+	/* border: 1px solid black; */
+}
+.item-img-block-candies{
+	background-color: #000;
+	width: 100%;
+	height: 70%;
+	position: relative;
+	cursor: pointer;
+	overflow-y: hidden;
+}
+.item-img-block-candies .item-img-cake{
+	opacity: 1;
+}
+
+.item-img-block-candies:hover .item-img-cake{
+	opacity: 0.6;
+}
+.item-basket-candies{
+	opacity: 0;
+	position: absolute;
+	top: 80px;
+	left: 95px;
+}
+.item-img-block-candies:hover .item-basket-candies{
+	opacity: 1;
+}
+.item-img-block-candies:hover .more{
+	opacity: 1;
+	animation: raise 0.3s ease;
+}
+
+.item-box-candies{
+	height: 100px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0px 20px;
+	font-size: 22px;
+}

@@ -1,0 +1,66 @@
+/*pagination*/
+
+.posts__pagination {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    margin: 70px auto;
+}
+.pagination__nav {
+	height: 50px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+.pagination__nav >:not(:last-child) {
+    margin-right: 40px;
+}
+.pagination__page-list {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+}
+.pagination__page-list >:not(:last-child) {
+    margin-right: 20px;
+}
+.pagination__controls {
+    font-size: 1.5rem;
+    /* padding: 10px 10px; */
+    display: flex;
+    justify-content: center;
+    align-content: center;
+	flex-wrap: wrap;
+}
+.pagination__controls--active {
+    border-bottom: solid 1px #fff;
+}
+.pagination__page-size {
+    /*width: 85px;*/
+    margin: 20px auto;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    padding: 5px 10px;
+}
+.page-size__input {
+	background-color: #EDEDED;
+    appearance: none;
+	border-bottom: solid 1px black;
+    width: 30px;
+    margin: 0 20px;
+}
+.page-size__select {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+}
+@media (max-width: 600px) {
+
+    .pagination__nav >:not(:last-child) {
+        margin-right: 20px;
+    }
+    .pagination__page-list >:not(:last-child) {
+        margin-right: 10px;
+    }
+}

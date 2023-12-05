@@ -25,7 +25,7 @@ export default async (req,res,next) =>{
 			next()
 		}
 		else{
-			res.status(500).json({
+			res.status(403).json({
 				message:"Нет доступа"
 			})
 		}

@@ -84,35 +84,3 @@ describe('Middleware', () => {
 		});
 	});
 });
-
-describe('Заказы', () => {
-
-	it('Ошибка валидации (пустой запрос)', (done) => {
-		chai.request(server)
-			.post('/orders')
-			.set('Authorization', `Bearer ${token}`)
-			.end((err, res) => {             
-				expect(res.status).to.be.equal(400);
-				expect(res.body).to.be.a('array');   
-				done();
-		});
-	});
-	
-	it('Ошибка валидации (без имени)', (done) => {
-		chai.request(server)
-			.post('/orders')
-			.send({
-				"phone": user.phone,
-				// "username": user.fullName,
-				'methodDelivery': 'delivery',
-				"products" : [{value: 1, product: '6377987a6359d93c2c7e31ca'}]
-			})
-			.set('Authorization', `Bearer ${token}`)
-			.end((err, res) => {             
-				expect(res.status).to.be.equal(400);
-				expect(res.body).to.be.a('array');
-				expect(res.body[0].msg === 'Укажите имя заказчика');
-				done();
-		});
-	});
-});

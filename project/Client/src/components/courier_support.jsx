@@ -37,9 +37,14 @@ export default function Courier_Support ({user, rolled, mobile, reloadComponent}
 	
 	const inputRef = useRef()
 	const handleKeyDown = (e) => {
+		// Отправка формы
 		if (e.key === 'Enter' && !e.shiftKey) {
 		  e.preventDefault();
 		  send(e);
+		}
+		// Пользователь печатает
+		else{
+			socket.emit('appeal_typing', { username: user.fullName, id: user._id, user: user});
 		}
 	};
 
@@ -71,6 +76,11 @@ export default function Courier_Support ({user, rolled, mobile, reloadComponent}
 			console.log(`support_${user._id}`)
 			socket.emit('join-room', `support_${user._id}`);
 			socket.emit('appeal_start', user);
+		});
+
+		// Пользователь печатает
+		socket.on('appeal_onTyping', (chat) => {
+			console.log('typing', chat)
 		});
 
 		setSocket(socket)
@@ -135,7 +145,7 @@ export default function Courier_Support ({user, rolled, mobile, reloadComponent}
 						}
 					</div>
 					<form onSubmit={(e) => send(e)} className="chat-write-block">
-					<div ref={inputRef} className='admin-chat-input' contentEditable="true"  onInput={e => setWrite(e.target.innerText)} onKeyDown={handleKeyDown}></div>
+						<div ref={inputRef} className='admin-chat-input' contentEditable="true"  onInput={e => setWrite(e.target.innerText)} onKeyDown={handleKeyDown}></div>
 						<button type="submit" className="send-block">
 							<img src={imgSend} alt=""/>
 						</button>

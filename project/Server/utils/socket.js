@@ -15,8 +15,8 @@ export default function Socket (server){
 
 	let couriers = [];
 	let appeales = [];
-
 	io.on('connection', (socket)=>{
+
 		socket.on('order', (action, obj) =>{
 				socket.broadcast.emit('update-orders-list', action, obj)
 				socket.disconnect();
@@ -82,6 +82,13 @@ export default function Socket (server){
 					// io.emit('appeal_read', chat);
 					io.to(`support_${user._id}`).emit('appeal_read', chat);
 				}
+			}
+		});
+
+		socket.on('appeal_typing', (user) => {
+			const chat = appeales.find((appeal) => appeal.user._id === user.id);
+			if (chat) {
+				socket.broadcast.to(`support_${user.id}`).emit('appeal_onTyping', user);
 			}
 		});
 

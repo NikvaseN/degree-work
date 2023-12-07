@@ -23,7 +23,7 @@ const ENV = process.env.NAME
 const app = express();
 app.use(express.json());
 app.use(cors({
-	origin: '*'
+	origin: process.env.CLIENT
 }));
 
 // Подключение маршрутов

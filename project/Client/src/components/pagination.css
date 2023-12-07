@@ -44,7 +44,8 @@
     padding: 5px 10px;
 }
 .page-size__input {
-	background-color: #EDEDED;
+	background-color: #F8F8F8;
+	/* background-color: #EDEDED; */
     appearance: none;
 	border-bottom: solid 1px black;
     width: 30px;

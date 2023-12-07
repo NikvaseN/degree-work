@@ -7,8 +7,7 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test mocha --timeout 10000",
     "start-test": "cross-env NODE_ENV=test node ./node_modules/nodemon/bin/nodemon.js index.js",
-    "start": "cross-env NODE_ENV=dev node ./node_modules/nodemon/bin/nodemon.js index.js",
-    "start:react": "cd ./react-project && npm start"
+    "start": "node ./node_modules/nodemon/bin/nodemon.js index.js"
   },
   "keywords": [],
   "author": "",

@@ -8,7 +8,7 @@
     "client": "cd ./Client && npm start",
     "server": "cd ./Server && npm start",
     "server-test": "cd ./Server && npm run start-test",
-    "setup":"cd ./Client && npm i && cd ../Server && npm i && cd ../../"
+    "setup":"cd ./Client && npm i && copy example.env .env && cd ../Server && npm i && copy example.env .env && copy example.env.test .env.test && copy example.env.dev .env.dev && cd ../../"
   },
   "repository": {
     "type": "git",

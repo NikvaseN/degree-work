@@ -1,7 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
 import './admin.css'
 import './courier_support.css'
-import './courier_support.css'
 import { io } from 'socket.io-client';
 import imgSend from '../img/icons/send.png'
 import arrow from '../img/icons/page-next.png'
@@ -15,6 +14,10 @@ import { formatDate, formatPhoneNumber } from "./functions.jsx"
 
 export default function Admin_Support ({appeales, user, rolled, mobile, reloadComponent}) {
 	const [socket, setSocket] = useState(false);
+
+	// Пользователи, которые сейчас печатают
+	const [typers, setTypers] = useState([]);
+
 	// const setUp = async () => {
 	// 	await axios.get('/courier/working').then(res =>{
 	// 		setActiveOrder(res.data)
@@ -50,6 +53,10 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 		  e.preventDefault();
 		  send(e);
 		}
+		// Пользователь печатает
+		else{
+			socket.emit('appeal_typing', { username: user.fullName, id: chatUserId, user: user});
+		}
 	};
 
 	const send = (e) =>{
@@ -69,6 +76,7 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 		}
 
 		let socketF;
+		// Если есть активный чат
 		if(chatUserId){
 			socketF = socket
 			socketF.emit('leave-room', `support_${chatUserId}`);
@@ -105,6 +113,13 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 			});
 			setChatActive(true)
 		}
+
+		// Пользователь печатает
+		socketF.on('appeal_onTyping', (chat) => {
+			console.log('typing', chat)
+			setTypers(prev => [...prev, chat])
+		});
+
 		setSocket(socketF)
 		setChatUserId(chatId)
 	}
@@ -219,6 +234,11 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 											</div>
 									))
 							}
+							{typers?.map((obj) => (
+								<p className='chat-read__typing'>
+									{obj.username} печатает...
+								</p>
+							))}
 						</div>
 						<form onSubmit={(e) => send(e)} className="chat-write-block">
 							{chatActive && 

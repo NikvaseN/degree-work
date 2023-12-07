@@ -9,7 +9,7 @@ export const registerValidation = [
 ];
 
 export const orderCreateValidation = [
-	body('products', 'Выберите товары'),
+	body('products', 'Выберите товары').isArray(),
 	body('methodDelivery', 'Выберите способ доставки').isLength({min: 2}),
 	body('username', 'Укажите имя заказчика').isLength({min: 1}),
 	body('phone', 'Укажите номер, не менее 11 символов').isLength({min: 11, max: 11}),

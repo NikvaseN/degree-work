@@ -24,6 +24,7 @@
 	padding: 30px 50px;
 	gap: 10px;
 	transition: .3s;
+	position: relative;
 }
 
 .chat-write-block{
@@ -221,6 +222,13 @@
 
 .appeales-item:hover .appeales-item-send{
 	width: calc(100% + 2px);
+}
+
+.chat-read__typing{
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	color: white;
 }
 
 @media (max-width: 1400px){

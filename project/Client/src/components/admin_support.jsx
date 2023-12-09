@@ -18,6 +18,8 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 	// Пользователи, которые сейчас печатают
 	const [typers, setTypers] = useState([]);
 
+	const [newTyper, setNewTyper] = useState();
+
 	// const setUp = async () => {
 	// 	await axios.get('/courier/working').then(res =>{
 	// 		setActiveOrder(res.data)
@@ -68,9 +70,34 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 			setWrite('')
 		}
 	}
-	
-	const startChat = (chatId) =>{
 
+
+	function removeUserTyping(user) {
+		const updatedTypers = typers.filter(typer => typer.user._id !== user.user._id);
+		setTypers(updatedTypers);
+	}
+	
+	const addTypers = (user) =>{
+		// Если пользователь уже есть в массиве
+		if (typers.some(typer => typer.user._id === user.user._id)) {
+			return;
+		}
+
+		setTypers(prev => [...prev, user])
+
+		setTimeout(() => {
+			removeUserTyping(user);
+		}, 4000);
+
+	}
+
+	useEffect(()=>{
+		if(newTyper){
+			addTypers(newTyper)
+		}
+	}, [newTyper])
+
+	const startChat = (chatId) =>{
 		if(chatUserId && chatUserId === chatId){
 			return;
 		}
@@ -93,7 +120,6 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 			socketF = io(process.env.REACT_APP_API_HOST)
 			
 			socketF.on('appeal_read', (chat) => {
-				console.log('working', chat.messages)
 				setMsgs(chat.messages)
 			});
 
@@ -115,9 +141,10 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 		}
 
 		// Пользователь печатает
-		socketF.on('appeal_onTyping', (chat) => {
-			console.log('typing', chat)
-			setTypers(prev => [...prev, chat])
+		socketF.on('appeal_onTyping', (user) => {
+			if (!typers.some(typer => typer.user._id === user.user._id)) {
+				setNewTyper(user)
+			}
 		});
 
 		setSocket(socketF)
@@ -141,7 +168,6 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 		return <img src={default_profile} alt=""/>
 	}
 	const viewUser = (obj) =>{
-		console.log(obj)
 		const role = obj.user.role === 'courier' ? 'Курьер' : obj.user.role === 'admin' ? 'Администратор' : 'Пользователь'
 		const user = obj.user
 		const imageUrl = `${process.env.REACT_APP_IMG_URL}${user.imageUrl}`
@@ -176,7 +202,6 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 			`
 		})
 	}
-
 	return (
 		<>
 			<div className="container admin-container">
@@ -234,11 +259,21 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 											</div>
 									))
 							}
-							{typers?.map((obj) => (
-								<p className='chat-read__typing'>
-									{obj.username} печатает...
-								</p>
-							))}
+							{typers &&
+								typers.length > 1 ?
+									<p className='chat-read__typing'>
+										{typers.map((obj) => (			
+												obj.username + ', '
+										))
+										}
+										печатают <span>...</span>
+									</p> :
+								typers.length === 1 &&
+									<p className='chat-read__typing'>
+										{typers[0].username} печатает<span>...</span>
+									</p>
+									
+							}
 						</div>
 						<form onSubmit={(e) => send(e)} className="chat-write-block">
 							{chatActive && 

@@ -231,6 +231,34 @@
 	color: white;
 }
 
+.chat-read__typing > span {
+	display: inline-block;
+	color: #222;
+	font-weight: 900;
+	overflow: hidden;
+	position: relative;
+	vertical-align: top;
+}
+
+.chat-read__typing > span::after {
+	content: '...'; 
+	display: block;
+	color: white;
+	white-space: break-spaces;
+	position: absolute;
+	left: 0;
+	top: 0;
+	transform: translateX(-100%);
+	animation: TextPrint 2s steps(3, start) infinite;
+}
+
+@keyframes TextPrint {
+	100% {
+		transform: translateX(0%);
+	}
+}
+
+
 @media (max-width: 1400px){
 	.admin-support{
 		flex-direction: column;

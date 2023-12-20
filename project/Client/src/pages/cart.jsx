@@ -153,9 +153,9 @@ export default function Cart() {
 	}, [])
 	const [username, setUsername] = React.useState ()
 	const [city, setCity] = React.useState ('Иркутск')
-	const [phone, setPhone] = React.useState ()
-	const [street, setStreet] = React.useState ()
-	const [house, setHouse] = React.useState ()
+	const [phone, setPhone] = React.useState ('')
+	const [street, setStreet] = React.useState ('')
+	const [house, setHouse] = React.useState ('')
 	const [apartment, setApartment] = React.useState ()
 	const [validationPhoneFailed, setValidationPhoneFailed] = React.useState (false)
 	const [validationAdressFailed, setValidationAdressFailed] = React.useState (false)
@@ -190,11 +190,12 @@ export default function Cart() {
 				coordinates = [Number(coordinatesData[1]), Number(coordinatesData[0])]
 				})
 				.catch(error => {
-				console.error('Ошибка при геокодировании:', error);
+					console.error('Ошибка при геокодировании:', error);
 				});
 			}
 			else{
 				swal.fire("Заполните все поля!", '', "error");
+				return;
 			}
 		}
 		if(user){
@@ -207,26 +208,31 @@ export default function Cart() {
 				username, phone, city: Address.locality, street: Address.street, house: Address.house, apartment, coordinates, methodDelivery, fullPrice, products, nonAuthUser
 			}
 		}
-		const socket = io(process.env.REACT_APP_API_HOST)
-
-		await axios.post('/orders', fields).then((res) =>{
+		
+		if (username && phone){
+			const socket = io(process.env.REACT_APP_API_HOST)
+			await axios.post('/orders', fields).then((res) =>{
 			
-			socket.emit('order', 'add', res.data)
-			window.localStorage.removeItem('cart')
-			// if (!user) {
-			// 	let history = JSON.parse(window.localStorage.getItem('history'))
-			// 	if(history == null){
-			// 		window.localStorage.setItem('history', JSON.stringify([res.data]))
-			// 	}
-			// 	else{
-			// 		history.push(res.data)
-			// 		window.localStorage.setItem('history', JSON.stringify(history))
-			// 	}
-			// }
-			setQuantityCart(0)
-			navigate('/history')
+				socket.emit('order', 'add', res.data)
+				window.localStorage.removeItem('cart')
+				// if (!user) {
+				// 	let history = JSON.parse(window.localStorage.getItem('history'))
+				// 	if(history == null){
+				// 		window.localStorage.setItem('history', JSON.stringify([res.data]))
+				// 	}
+				// 	else{
+				// 		history.push(res.data)
+				// 		window.localStorage.setItem('history', JSON.stringify(history))
+				// 	}
+				// }
+				setQuantityCart(0)
+				navigate('/history')
+			}
+			)
 		}
-		)
+		else{
+			swal.fire("Заполните все поля!", '', "error");
+		}
 		
 	}
 	const [defaultName, setDefaultName] = React.useState('')
@@ -284,7 +290,7 @@ export default function Cart() {
 				}
 				
 				{(cartItems).map((obj, index) => (
-					checkActiveItem(index) && (
+					checkActiveItem(index) && obj.product &&(
 					<div className="cart-item">
 					<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="" width={383} height={260}/>
 					<div className="cart-item-text">

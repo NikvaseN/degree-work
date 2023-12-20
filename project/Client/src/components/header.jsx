@@ -54,11 +54,13 @@ export default function Header() {
 		setErrors([])
 		closeRegister()
 		setLogin(true)
+		clearUserFields()
 		document.body.style.overflowY = "hidden";
 	}
 	const closeLogin = async () =>{
 		setErrors([])
 		setLogin(false);
+		clearUserFields()
 		document.body.style.overflowY = "visible";
 		
 	}
@@ -66,11 +68,13 @@ export default function Header() {
 		setErrors([])
 		closeLogin()
 		setRegister(true)
+		clearUserFields()
 		document.body.style.overflowY = "hidden";
 	}
 	const closeRegister = async () =>{
 		setErrors([])
 		setRegister(false);
+		clearUserFields()
 		document.body.style.overflowY = "visible";
 		
 	}
@@ -78,8 +82,15 @@ export default function Header() {
 		setRegister(false);
 		setLogin(false);
 		setErrors([])
+		clearUserFields()
 		document.body.style.overflowY = "visible";
 	}
+	const clearUserFields = () => {
+		setPhone('')
+		setPassword('')
+		setfullName('')
+	}
+
 	const [authAttempt, setAuthAttempt] = React.useState(0)
 	const [incorrectLogin, setIncorrectLogin] = React.useState(false)
 	const [incorrectRegister, setIncorrectRegister] = React.useState(false)
@@ -193,7 +204,7 @@ export default function Header() {
 				<p className='header-popup__title'>Авторизация</p>
 				{(incorrectRegister && errors) &&
 				<div className="errors-block">
-					{errors.length > 1 ?(
+					{errors && Array.isArray(errors) ?(
 						errors?.map((obj, i) => (
 						<p className='incorrect'>{obj.msg}</p>
 						))

@@ -172,7 +172,7 @@ input::-webkit-inner-spin-button {
 
 .change-item-input{
 	width: 100%;
-	background-color: #EDEDED;
+	/* background-color: #EDEDED; */
 	border-bottom: solid 1px #444 ;
 	
 }

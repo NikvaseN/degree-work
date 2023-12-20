@@ -172,6 +172,7 @@ export default function Courier_Orders ({rolled, mobile, reloadComponent}) {
 								<h3>Товары</h3>
 							</div>
 							{target && target.products.map((obj) =>(
+								obj.product &&
 								<div className='courier-orders-products' style={{justifyContent: 'space-between'}}>
 									<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="" width={70} height={50}/>
 									<h3>{obj.product.name}</h3>

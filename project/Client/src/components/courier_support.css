@@ -211,9 +211,10 @@
 	right: -1px;
 	top: -1px;
 	background-color: #fff;
+	border: 1px solid white;
 	width: 32px;
-	height: 32px;
-	border-radius: 100em;
+	height: 100%;
+	border-radius: 2em;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -225,7 +226,7 @@
 }
 
 .chat-read__typing{
-	position: absolute;
+	position: fixed;
 	bottom: 10px;
 	left: 10px;
 	color: white;

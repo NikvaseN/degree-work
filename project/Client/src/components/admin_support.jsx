@@ -73,16 +73,17 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 
 
 	function removeUserTyping(user) {
-		const updatedTypers = typers.filter(typer => typer.user._id !== user.user._id);
+		const updatedTypers = typers.filter(typer => {
+			 return typer.user._id !== user.user._id
+			});
 		setTypers(updatedTypers);
 	}
-	
+
 	const addTypers = (user) =>{
 		// Если пользователь уже есть в массиве
 		if (typers.some(typer => typer.user._id === user.user._id)) {
 			return;
 		}
-
 		setTypers(prev => [...prev, user])
 
 		setTimeout(() => {
@@ -92,7 +93,7 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 	}
 
 	useEffect(()=>{
-		if(newTyper){
+		if(newTyper && typers.length === 0){
 			addTypers(newTyper)
 		}
 	}, [newTyper])
@@ -142,9 +143,7 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 
 		// Пользователь печатает
 		socketF.on('appeal_onTyping', (user) => {
-			if (!typers.some(typer => typer.user._id === user.user._id)) {
 				setNewTyper(user)
-			}
 		});
 
 		setSocket(socketF)
@@ -259,20 +258,11 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 											</div>
 									))
 							}
-							{typers &&
-								typers.length > 1 ?
+							{typers?.length === 1 &&
 									<p className='chat-read__typing'>
-										{typers.map((obj) => (			
-												obj.username + ', '
-										))
-										}
-										печатают <span>...</span>
-									</p> :
-								typers.length === 1 &&
-									<p className='chat-read__typing'>
+										{console.log(typers)}
 										{typers[0].username} печатает<span>...</span>
 									</p>
-									
 							}
 						</div>
 						<form onSubmit={(e) => send(e)} className="chat-write-block">

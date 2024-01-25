@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import axios from "../axios.js";
 import { Navigate, useNavigate } from "react-router-dom";
 import '../components/courier.css'
+import { Context } from "../context.js";
 
 export default function AuthBlock() {
 	const [phone, setPhone] = React.useState()
@@ -14,6 +15,8 @@ export default function AuthBlock() {
 		e.preventDefault();
 		login()
 	}
+	
+	const {user, setUser} = useContext(Context);
 
 	const login = async () => {
 		try {
@@ -22,6 +25,7 @@ export default function AuthBlock() {
 			}
 			await axios.post('/auth/login', fields).then(res =>{
 				window.localStorage.setItem('token', res.data.token)
+				setUser(res.data.token)
 				navigate(0)
 			}).catch(err => setErrors(err.response.data))
 			
@@ -30,7 +34,7 @@ export default function AuthBlock() {
 		}
 		
 	}
-	console.log(errors)
+	// console.log(errors)
 	return (
 		<div className="auth-block">
 			<div className="popup-item">

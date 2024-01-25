@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import imgSend from '../img/icons/send.png'
 import system from '../img/icons/settings.png'
 import default_profile from '../img/icons/default_profile.jpg'
+import Swal from 'sweetalert2';
 
 export default function Courier_Support ({user, rolled, mobile, reloadComponent}) {
 	const [socket, setSocket] = useState(false);
@@ -121,11 +122,36 @@ export default function Courier_Support ({user, rolled, mobile, reloadComponent}
 	}
 
 	const closeChat = () =>{
-		if(window.confirm('Вы уверены что хотите отменить обращение ?')){
-			// setChatActive(false)
-			// setMsgs([{username: 'Система', msg: 'Здравствуйте, чем вам помочь ?', id: '0'}])
-			socket.emit('appeal_cancel', user._id, user);
-		}
+
+		Swal.fire({
+			title: 'Отменить',
+			text: "Вы уверены что хотите отменить обращение ?",
+			icon: 'question',
+			showCancelButton: true,
+			// reverseButtons: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			cancelButtonText: 'Нет',
+			confirmButtonText: 'Да',
+		}).then(async (res) =>{
+			if(res.isConfirmed){
+				try{
+					inputRef.current.innerText = ''
+					socket.emit('appeal_cancel', user._id, user);
+					Swal.fire(
+						'Успешно!',
+						'Обращение отменено',
+						'success'
+					)
+				} catch {
+					Swal.fire(
+						'Ошибка!',
+						'Что-то пошло не так',
+						'error'
+					)
+				}
+			}
+		})
 	}
 	
 	const avatarMsg = (obj) =>{
@@ -143,10 +169,18 @@ export default function Courier_Support ({user, rolled, mobile, reloadComponent}
 			<div className="container">
 				<div className="empty-header-admin"></div>
 				<div className="chat-block">
-					<h2>Поддержка</h2>
-					{chatActive && 
-						<div onClick={closeChat} className="change-profile support">Отменить обращение</div>
-					}
+					<div className="chat__header">
+						{typers?.length === 1 &&
+							<p className='chat-read__typing'>
+								{console.log(typers)}
+								{typers[0].username} печатает<span>...</span>
+							</p>
+						}
+						<h2>Поддержка</h2>
+						{chatActive && 
+							<div onClick={closeChat} className="change-profile support">Отменить обращение</div>
+						}
+					</div>
 					<div className="chat-read">
 					{chatActive ?
 							<>
@@ -172,12 +206,6 @@ export default function Courier_Support ({user, rolled, mobile, reloadComponent}
 										<h3>{obj.msg}</h3>
 									</div>
 							))}
-							{typers?.length === 1 &&
-								<p className='msg-block'>
-									{console.log(typers)}
-									{typers[0].username} печатает<span>...</span>
-								</p>
-							}
 							</>
 							:
 							<div onClick={startChat} className="start-chat">

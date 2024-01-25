@@ -46,3 +46,13 @@
 .cart-item-text.item-change{
 	width: 50%;
 }
+
+.btn-component-refresh{
+	position: absolute;
+	top: 40px;
+	right: 65px;
+}
+
+.invert{
+	filter: invert(1);
+}

@@ -4,6 +4,8 @@ import {formatDate} from './functions.jsx'
 import sad from '../img/icons/sad-anxious.gif';
 import load from "../img/icons/delivery.gif"
 import './courier.css'
+import '../components/item_change.css'
+import imgRefresh from '../img/icons/refresh.png'
 
 export default function Courier_History ({rolled, mobile, reloadComponent}) {
 	const [isLoad, setIsLoad] = React.useState(false)
@@ -71,10 +73,7 @@ export default function Courier_History ({rolled, mobile, reloadComponent}) {
 
 	const setMain = () =>{
 		main.push(
-			<>
-				<p style={{fontSize : 36}}>Выполненные заказы</p>
-				<div className="hr"></div>
-				{(orders).map((obj, index) => (
+				(orders).map((obj, index) => (
 					!cheackOpenItem(index) ? (
 						<div id="courier-history-item" className="history-item" onClick={() => setOpenedItems(index)}>
 							<div className='icon_status ended' ></div>
@@ -155,8 +154,7 @@ export default function Courier_History ({rolled, mobile, reloadComponent}) {
 						</div>
 					)
 					
-				))}
-			</>
+				))
 		)
 	}
 	setMain ()
@@ -166,6 +164,11 @@ export default function Courier_History ({rolled, mobile, reloadComponent}) {
 		<div className='container'>
 			{/* <Header/> */}
 			<div className="empty-header-admin"></div>
+			<button className='invert btn-component-refresh' onClick={reloadComponent}>
+				<img src={imgRefresh} alt="" width={40} height={40}/>
+			</button>
+			<p style={{fontSize : 36}}>Выполненные заказы</p>
+			<div className="hr"></div>
 			{isLoad ? 
 			(
 				!orders.length ?

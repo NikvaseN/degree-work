@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 import phone from '../img/icons/phone.png'
 import birthday from '../img/icons/birthday.png'
 import work from '../img/icons/work.png'
-import { formatDate, formatPhoneNumber } from "./functions.jsx"
+import { formatDate, escapeHtml} from "./functions.jsx"
 
 export default function Admin_Support ({appeales, user, rolled, mobile, reloadComponent}) {
 	const [socket, setSocket] = useState(false);
@@ -39,8 +39,6 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 			socket && socket.close()
 		}
 	}, [])
-	// Обновлять чат
-	const [refresh, setRefresh] = useState(false);
 
 	// id пользователя, который создал обращение
 	const [chatUserId, setChatUserId] = useState();
@@ -151,10 +149,40 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 	}
 
 	const closeChat = () =>{
-		if(window.confirm('Вы уверены что хотите отменить обращение ?')){
-			setChatActive(false)
-			socket.emit('appeal_cancel', chatUserId, user);
+		// if(window.confirm('')){
+		// 	setChatActive(false)
+		// 	socket.emit('appeal_cancel', chatUserId, user);
+		// }
+		Swal.fire({
+			title: 'Отменить',
+			text: "Вы уверены что хотите отменить обращение ?",
+			icon: 'question',
+			showCancelButton: true,
+			// reverseButtons: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			cancelButtonText: 'Нет',
+			confirmButtonText: 'Да',
+		}).then(async (res) =>{
+			if(res.isConfirmed){
+				try{
+					setChatActive(false)
+					socket.emit('appeal_cancel', chatUserId, user);
+					Swal.fire(
+						'Успешно!',
+						'Обращение отменено',
+						'success'
+					)
+				} catch {
+					Swal.fire(
+						'Ошибка!',
+						'Что-то пошло не так',
+						'error'
+					)
+				}
+			}
 		}
+		)
 	}
 
 	const avatarMsg = (obj) =>{
@@ -175,19 +203,19 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
  			html: `
 			 <div className="profile-block">
 			 <div className="profile-logo-block">
-				<img className="profile-logo" alt="фото" src='${user.imageUrl ? imageUrl : default_profile}' width="300px" height="300px"/>:
+				<img className="profile-logo" alt="фото" src='${user.imageUrl ? escapeHtml(imageUrl) : default_profile}' width="300px" height="300px"/>:
 			 </div>
 			 <div className="user-info-block">
 				 <img src={human} alt="" width={25} height={25}/>
-				 <p>Имя: <span>${user.fullName}</span></p>
-				 <p>Фамилия: <span>${user.surname}</span></p>
-				 <p>Отчество: <span>${user.patronymic}</span></p>
-				 <p>Баланс: <span>${user.balance}</span></p>
+				 <p>Имя: <span>${escapeHtml(user.fullName)}</span></p>
+				 <p>Фамилия: <span>${escapeHtml(user.surname)}</span></p>
+				 <p>Отчество: <span>${escapeHtml(user.patronymic)}</span></p>
+				 <p>Баланс: <span>${escapeHtml(user.balance)}</span></p>
 			 </div>
 			 <br />
 			 <div className="user-info-block" style='display: flex; align-items: center; justify-content: center '>
 				 <img src=${phone} alt="" width=${25} height=${25} style="margin-right: 10px"/>
-				 <p>${user.phone}</p>
+				 <p>${escapeHtml(user.phone)}</p>
 			 </div>
 			 <div className="user-info-block" style='display: flex; align-items: center; justify-content: center '>
 				 <img src=${birthday} alt="" width=${25} height=${25} style="margin-right: 10px"/>
@@ -201,6 +229,7 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 			`
 		})
 	}
+	console.log(appeales)
 	return (
 		<>
 			<div className="container admin-container">
@@ -209,7 +238,7 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 					<ul className="appeales-block">
 						<h3>Обращения</h3>
 						{appeales && appeales.map((obj) => (
-							<li onClick={() => startChat(obj.user._id)} className="appeales-item">
+							<li key={obj.socketId} onClick={() => startChat(obj.user._id)} className="appeales-item">
 								<p>{obj.user.fullName}</p>
 								<p>{obj.user.surname[0]}.</p>
 								<p>{obj.user.patronymic[0]}.</p>
@@ -228,17 +257,25 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 						</li> */}
 					</ul>
 					<div className="chat-block">
-						<h2>Чат</h2>
-						{chatActive && 
-							<div onClick={closeChat} className="change-profile support">Отменить обращение</div>
-						}
+						<div className="chat__header">
+							{typers?.length === 1 &&
+								<p className='chat-read__typing'>
+									{console.log(typers)}
+									{typers[0].username} печатает<span>...</span>
+								</p>
+							}
+							<h2>Чат</h2>
+							{chatActive && 
+								<div onClick={closeChat} className="change-profile support">Отменить обращение</div>
+							}
+						</div>
 						<div className="chat-read" style={{ height: chatActive ? "520px" : "0px", padding: chatActive ? '30px 50px' : '0px 50px'}}>
 							{chatActive &&
 								Object.keys(msgs).length > 0 &&
 									msgs?.map((obj, index) =>(
 										obj.id === user._id ?
 											<div key={index} className="msg-block-self">
-												{(index === 0 || (index > 0 && obj.id != msgs[index - 1].id)) && 
+												{(index === 0 || (index > 0 && obj.id !== msgs[index - 1].id)) && 
 													<h4 style={{marginTop: 20}}>
 													{avatarMsg(obj)}
 													Вы
@@ -248,7 +285,7 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 											</div>
 										:
 											<div key={index} className="msg-block admin">
-												{(index === 0 || (index > 0 && obj.id != msgs[index - 1].id)) && 
+												{(index === 0 || (index > 0 && obj.id !== msgs[index - 1].id)) && 
 													<h4 onClick={() => viewUser(obj)} style={{marginTop: 20}}>
 														{avatarMsg(obj)}
 														{obj.username}
@@ -257,12 +294,6 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 												<h3>{obj.msg}</h3>
 											</div>
 									))
-							}
-							{typers?.length === 1 &&
-									<p className='chat-read__typing'>
-										{console.log(typers)}
-										{typers[0].username} печатает<span>...</span>
-									</p>
 							}
 						</div>
 						<form onSubmit={(e) => send(e)} className="chat-write-block">

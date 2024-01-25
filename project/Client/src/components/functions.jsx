@@ -74,3 +74,24 @@ export function formatPhoneNumber(phoneNumber) {
   
 	return `${countryCode} (${areaCode}) ${firstPart}-${secondPart}-${thirdPart}`;
 }
+
+/**
+ * Эта функция преобразует специальные символы HTML в их экранированный формат.
+ * @param {string} text - Исходный текст, в котором нужно заменить специальные символы.
+ * @returns {string} - Текст с экранированными специальными символами HTML.
+ */
+
+export function escapeHtml(text) {
+    var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+
+    // Заменяем все специальные символы HTML в исходном тексте с помощью функции замены.
+    return String(text).replace(/[&<>"']/g, function(m) {
+        return map[m];
+    });
+}

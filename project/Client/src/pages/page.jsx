@@ -16,6 +16,8 @@ import next from '../img/icons/page-next.png'
 import last from '../img/icons/page-last.png'
 import {useContext } from 'react';
 import {Context} from '../context.js';
+import Swal from 'sweetalert2'
+import { escapeHtml } from '../components/functions.jsx'
 
 // import {Link} from "react-router-dom";
 import Header from '../components/header.jsx';
@@ -237,19 +239,83 @@ export default function Page({title, category, title_ru, title_header}) {
 		let fields = {
 			name, price, category, composition
 		}
-		if(window.confirm(`Вы действительно хотите изменить "${obj.name} - ${obj.price} ₽" на "${name} - ${price} ₽"`)){
-			await axios.patch(`/products/${obj._id}`, fields).then(navigate(0));
-		}
 
+		Swal.fire({
+			title: 'Изменить?',
+			text: "Вы собираетесь изменить:",
+			html: 
+				`<p style='color: black'>
+					<span style='margin-right:20px'>${escapeHtml(obj.name)}</span> 🠖 <span style='margin-left:20px'>${escapeHtml(name)}</span>
+					<br><br>
+					<span style='margin-right:20px'>${escapeHtml(obj.price)}</span> 🠖 <span style='margin-left:20px'>${escapeHtml(price)}</span>
+				</p>`,
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			cancelButtonText: 'Нет',
+			confirmButtonText: 'Да'
+		}).then(async (res) => {
+
+			//* Отправка изменений на сервер
+			if (res.isConfirmed) {
+				await axios.patch(`/products/${obj._id}`, fields).then(res => {
+					Swal.fire(
+						'Успешно!',
+						'Изменения приняты',
+						'success'
+					)
+					navigate(0)
+				})
+				.catch((err) =>{
+					Swal.fire(
+						'Ошибка!',
+						'Что-то пошло не так',
+						'error'
+					)
+				})
+			}
+		})
 
 	}
 
 	const deleteItem = async (index) =>{
 		let item = data[index]
-		if(window.confirm(`Вы действительно хотите удалить "${item.name} - ${item.price} ₽"`)){
-			await axios.delete(`/products/${item._id}`)
-			navigate(0)
-		}
+		Swal.fire({
+			title: 'Удалить?',
+			text: "Вы собираетесь удалить:",
+			html: 
+				`<p style='color: black'>
+					<span style='margin-right:20px'>${escapeHtml(item.name)}</span>  <span style='margin-left:20px'>${escapeHtml(item.price)} ₽</span>
+					<br><br>
+				</p>`,
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			cancelButtonText: 'Нет',
+			confirmButtonText: 'Да'
+		}).then(async (res) => {
+
+			//* Отправка изменений на сервер
+			if (res.isConfirmed) {
+				await axios.delete(`/products/${item._id}`).then(res => {
+					Swal.fire(
+						'Успешно!',
+						'Товар удален',
+						'success'
+					)
+					navigate(0)
+				})
+				.catch((err) =>{
+					Swal.fire(
+						'Ошибка!',
+						'Что-то пошло не так',
+						'error'
+					)
+				})
+			}
+		})
 	}
 
 	// Пагинация

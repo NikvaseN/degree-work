@@ -1,7 +1,7 @@
 import '../components/normalize.css'
 import '../components/form.css'
 import './admin_account_create.css'
-import React, {useState} from 'react';
+import React from 'react';
 import axios from '../axios.js'
 import InputMask from 'react-input-mask';
 import swal from 'sweetalert2';
@@ -139,7 +139,7 @@ export default function Admin_account_create() {
 		// else{
 		// 	await axios.post('/products', fields).then(() => alert('Успешно ✅')).catch(err =>{
 		// 		let data = err.response.data
-		// 		let errors = data.map((obj, index) => index == 0 ? 'Заполните все поля ❌' + '\n\n' + obj.msg : '\n\n' + obj.msg)
+		// 		let errors = data.map((obj, index) => index === 0 ? 'Заполните все поля ❌' + '\n\n' + obj.msg : '\n\n' + obj.msg)
 		// 		alert(errors)
 		// 	}
 		// 	)

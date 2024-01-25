@@ -142,6 +142,37 @@ export default function Admin() {
 		}
 	}, [rolled])
 	/// Свернуть (развернуть) sidebar
+	const logOut = () => {
+		Swal.fire({
+			title: 'Выход',
+			text: "Вы действительно хотите выйти?",
+			icon: 'question',
+			showCancelButton: true,
+			// reverseButtons: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			cancelButtonText: 'Нет',
+			confirmButtonText: 'Да',
+		}).then(async (res) =>{
+			if(res.isConfirmed){
+				try{
+					window.localStorage.removeItem('token')
+					navigate(0)
+					Swal.fire(
+						'Успешно!',
+						'Вы успешно вышли',
+						'success'
+					)
+				} catch {
+					Swal.fire(
+						'Ошибка!',
+						'Что-то пошло не так',
+						'error'
+					)
+				}
+			}
+		})	
+	}
 
 	let section = []
 	section.push(
@@ -150,13 +181,13 @@ export default function Admin() {
 				<Admin_section_main/>
 			):
 			target === 'orders' ? (
-				<List_orders/>
+				<List_orders key={refresh} reloadComponent={reloadComponent}/>
 			):
 			target === 'products' ? (
 				<Admin_products setTarget={setTarget}/>
 			):
 			target === 'addProducts' ? (
-				<Item_add key={refresh}/>
+				<Item_add/>
 			): 
 			target === 'changeProducts' ? (
 				<Item_change setTarget={setTarget} reloadComponent={reloadComponent} key={refresh}/>
@@ -165,7 +196,7 @@ export default function Admin() {
 				<Accounts setTargetComponent={setTarget} user={user} reloadComponent={reloadComponent} key={refresh}/>
 			):
 			target === 'support' ? (
-				<Support appeales={appeales} setTargetComponent={setTarget} user={user} reloadComponent={reloadComponent} key={refresh}/>
+				<Support appeales={appeales} setTargetComponent={setTarget} user={user} reloadComponent={reloadComponent}/>
 			):
 			target === 'accountsCreate' && (
 				<Admin_account_create/>
@@ -232,7 +263,8 @@ export default function Admin() {
 								<button className='header-link category desserts'><Link to='/desserts'><h4 className='header-links'>Десерты</h4></Link></button>
 							</div>
 							<div className="admin-links">
-								<Link to='/admin' className='settings-link settings'><img src={settings} alt="" width='40px' height='40px'/></Link>
+								{/* <Link to='/admin' className='settings-link settings'><img src={settings} alt="" width='40px' height='40px'/></Link> */}
+								<button onClick={logOut}><h3 className='header-links'>Выйти</h3></button>
 							</div>
 						</div>
 						<div className="lk-section">

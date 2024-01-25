@@ -5,20 +5,23 @@ import load from "../img/icons/load.gif"
 import undefined from "../img/icons/undefined.webp"
 import axios from '../axios.js';
 import {Link} from "react-router-dom";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext} from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
+import { Context } from '../context.js';
+import imgRefresh from '../img/icons/refresh.png'
+
 // import {useNavigate } from 'react-router-dom';
 // import close from '../img/icons/close.png'
-export default function List_orders() {
+export default function List_orders({reloadComponent}) {
 	const [historyEmpty, setHistoryEmpty] = React.useState(true)
 	const [pageLoad, setPageLoad] = React.useState(false)
 	const navigate = useNavigate()
-	const [user, setUser] = React.useState('')
 	const [orders, setOrders] = React.useState([])
+	const {user} = useContext(Context);
 
-	const getData = (id) =>{
-		axios.get('/orders/active').then(res =>{
+	const getData = async () =>{
+		await axios.get('/orders/active').then(res =>{
 			if(res.data[0] !== undefined){
 				setHistoryEmpty(false)
 			}
@@ -33,19 +36,13 @@ export default function List_orders() {
 	const alertSound = () =>{
 		audio.play()
 	}
+
 	const [socket, setSocket] = React.useState()
-	const getUser = async () => {
-		document.title = "Список заказов"
-		await axios.get('/auth/me').then(res =>{
-			setUser(res.data)
-			getData(res.data._id)
-			alert()
-		}).catch(() => {
-			setPageLoad(true)
-		})
-	}
+
 	React.useEffect(() =>{
-		getUser()
+		document.title = "Список заказов"
+		alert()
+		getData()
 	}, [])
 
 	React.useEffect(()=>{
@@ -68,6 +65,7 @@ export default function List_orders() {
 
 		setSocket(socket)
 	}
+
 	React.useEffect(() =>{
 		setMain()
 	}, [orders])
@@ -375,7 +373,16 @@ export default function List_orders() {
 	return (
 		<div className='container'>
 			<div className="empty-header-admin"></div>
-
+			<button className='invert btn-component-refresh' onClick={reloadComponent}>
+				<img src={imgRefresh} alt="" width={40} height={40}/>
+			</button>
+			<p style={{fontSize : 36}}>Заказы</p>
+			<div className="hr list-orders"></div>
+			<div className="favorites-navbar list">
+				<div className="btn-add-cart favorites-btn focus" onClick={(e) => changeTarget('new', e)}>Новые</div>
+				<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('pending', e)}>Активные</div>
+				<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('ended', e)}>Завершенные</div>
+			</div>
 			{
 			user && (user.role === 'moderator' || user.role === 'admin') ? (
 			pageLoad ? 
@@ -388,13 +395,8 @@ export default function List_orders() {
 				) 
 				:
 				<>
-				<p style={{fontSize : 36}}>Заказы</p>
-				<div className="hr list-orders"></div>
-				<div className="favorites-navbar list">
-					<div className="btn-add-cart favorites-btn focus" onClick={(e) => changeTarget('new', e)}>Новые</div>
-					<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('pending', e)}>Активные</div>
-					<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('ended', e)}>Завершенные</div>
-				</div>
+				
+			
 				{main}
 
 

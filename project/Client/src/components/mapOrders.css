@@ -48,6 +48,7 @@
 	justify-content: center;
 	padding-top: 20px;
 	margin-bottom: 20px;
+	position: relative;
 }
 
 .courier-orders-block .courier-orders-item:not(.target):nth-child(2n){

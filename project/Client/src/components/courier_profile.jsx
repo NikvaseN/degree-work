@@ -9,7 +9,7 @@ import birthday from '../img/icons/birthday.png'
 import work from '../img/icons/work.png'
 import plus from '../img/icons/plus.png'
 import default_profile from '../img/icons/default_profile.jpg'
-import { formatDate, formatPhoneNumber } from "./functions.jsx"
+import { formatDate, formatPhoneNumber, escapeHtml} from "./functions.jsx"
 
 export default function Courier_Profile ({user, rolled, mobile, reloadComponent}) {
 	const [stats, setStats] = useState()
@@ -92,7 +92,7 @@ export default function Courier_Profile ({user, rolled, mobile, reloadComponent}
 					title: 'Изменить?',
 					text: "Вы собираетесь изменить:",
 					html: 
-						`<p style='color: black'>${changes}</p>`,
+						`<p style='color: black'>${escapeHtml(changes)}</p>`,
 					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: '#3085d6',
@@ -149,21 +149,21 @@ export default function Courier_Profile ({user, rolled, mobile, reloadComponent}
 				title: 'Редактировать акканут',
 				html:
 				  '<label for="swal-input1" style="margin: 0px 15px">Имя</label>' +
-				  `<input id="swal-input1" value="${user.fullName}" class="swal2-input"> <br>` +
+				  `<input id="swal-input1" value="${escapeHtml(user.fullName)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input2">Фамилия</label>' +
-				  `<input id="swal-input2" value="${user.surname}" class="swal2-input"> <br>` +
+				  `<input id="swal-input2" value="${escapeHtml(user.surname)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input3">Отчество</label>' +
-				  `<input id="swal-input3" value="${user.patronymic}" class="swal2-input"> <br>` +
+				  `<input id="swal-input3" value="${escapeHtml(user.patronymic)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input4">Телефон</label>' +
-				  `<input id="swal-input4" value="${user.phone}" class="swal2-input"> <br>` +
+				  `<input id="swal-input4" value="${escapeHtml(user.phone)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input5" style="margin: 0px 10px">Город</label>' +
-				  `<input id="swal-input5" value="${user.city}" class="swal2-input"> <br>` +
+				  `<input id="swal-input5" value="${escapeHtml(user.city)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input6" style="margin: 0px 8px">Улица</label>' +
-				  `<input id="swal-input6" value="${user.street}" class="swal2-input"> <br>` +
+				  `<input id="swal-input6" value="${escapeHtml(user.street)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input7" style="margin: 0px 13px">Дом</label>' +
-				  `<input id="swal-input7" value="${user.house}" class="swal2-input"> <br>` +
+				  `<input id="swal-input7" value="${escapeHtml(user.house)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input8" style="margin: 0px -3px">Квартира</label>' +
-				  `<input id="swal-input8" value="${user.apartment}" class="swal2-input"> <br>` +
+				  `<input id="swal-input8" value="${escapeHtml(user.apartment)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input9" style="margin: 0px 6px">Пароль</label>' +
 				  `<input id="swal-input9" class="swal2-input"> <br>` +
 				  '<label for="swal-input10" style="margin: 0px -22px">Дата рождения</label>' +

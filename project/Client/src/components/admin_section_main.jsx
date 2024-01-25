@@ -2,7 +2,7 @@ import '../components/normalize.css'
 import '../components/courier.css'
 import '../components/admin_courier.css'
 import refresh from '../img/icons/refresh.png'
-import React, { useEffect } from 'react';
+import React from 'react';
 import axios from '../axios.js';
 import { io } from 'socket.io-client';
 

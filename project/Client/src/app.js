@@ -1,41 +1,37 @@
 import React, {useState} from 'react';
 import {Routes, Route, useLocation} from "react-router-dom";
-import ER404 from './pages/404.jsx';
-import Catalog from './pages/catalog.jsx';
-import Cakes from './pages/cakes.jsx';
-import Candies from './pages/candies';
-import Cart from './pages/cart.jsx';
-import History from './pages/history.jsx';
-import Ice_cream from './pages/ice-cream.jsx';
-import Desserts from './pages/desserts.jsx';
-import Favorites from './pages/favorites.jsx';
-import Admin from './pages/admin.jsx';
-import Courier from './pages/courier';
-import Header from './components/header.jsx';
-import Footer from './components/footer.jsx';
+
+import * as Pages from './imports/imports_pages.js'
+import {Header, Footer} from './imports/imports_components.js'
 
 export default function App() {
 
 	// Чтобы на странице /courier не отображался header и footer
 	const location = useLocation();
-	const hide = location.pathname === '/courier' || location.pathname === '/admin';
+	const hideList = ['/courier', '/admin', '/staff']
+	const hide = hideList.includes(location.pathname)
 
 	return (
 		<>
 		{!hide && <Header/> }
 		<div style={{minHeight: "calc(100vh - 75px)"}}>
 		<Routes>
-			<Route path='/' element = {<Catalog/>}/>
-			<Route path='/cakes' element = {<Cakes/>}/>
-			<Route path='/candies' element = {<Candies/>}/>
-			<Route path='/cart' element = {<Cart/>}/>
-			<Route path='/history/' element = {<History/>}/>
-			<Route path='/ice-cream' element = {<Ice_cream/>}/>
-			<Route path='/desserts' element = {<Desserts/>}/>
-			<Route path='/favorites' element = {<Favorites/>}/>
-			<Route path='*' element = {<ER404/>}/>
-			<Route path='/admin' element = {<Admin/>}/>
-			<Route path='/courier' element = {<Courier/>}/>
+			<Route path='/' element = {<Pages.Catalog/>}/>
+
+			<Route path='/cakes' element = {<Pages.Cakes/>}/>
+			<Route path='/candies' element = {<Pages.Candies/>}/>
+			<Route path='/ice-cream' element = {<Pages.Ice_cream/>}/>
+			<Route path='/desserts' element = {<Pages.Desserts/>}/>
+
+			<Route path='/cart' element = {<Pages.Cart/>}/>
+			<Route path='/history' element = {<Pages.History/>}/>
+			<Route path='/favorites' element = {<Pages.Favorites/>}/>
+
+			<Route path='/admin' element = {<Pages.Admin/>}/>
+			<Route path='/courier' element = {<Pages.Courier/>}/>
+			<Route path='/staff' element = {<Pages.LogInStaff/>}/>
+			
+			<Route path='*' element = {<Pages.ER404/>}/>
 	 	</Routes>
 		</div>
 		 {!hide && <Footer/> }

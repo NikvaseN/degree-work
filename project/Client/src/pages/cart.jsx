@@ -292,7 +292,9 @@ export default function Cart() {
 				{(cartItems).map((obj, index) => (
 					checkActiveItem(index) && obj.product &&(
 					<div className="cart-item">
-					<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="" width={383} height={260}/>
+					<div className='cart-item__img-block' style={{width: 360}}>
+						<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="Изображение товара" width={360} height={260}/>
+					</div>
 					<div className="cart-item-text">
 						<h2 style={{fontSize : 30, marginTop:15}}>{obj.product.name}</h2>
 						<h3 style={{marginBottom : 60, marginTop: 45}}>Состав: <span>{obj.product.composition}</span> </h3>

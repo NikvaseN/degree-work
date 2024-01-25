@@ -10,6 +10,8 @@ import phone from '../img/icons/phone.png'
 import placemark from '../img/icons/placemark.png'
 import {formatPhoneNumber} from './functions.jsx'
 import Swal from 'sweetalert2';
+import imgRefresh from '../img/icons/refresh.png'
+import '../components/item_change.css'
 
 export default function Courier_Orders ({rolled, mobile, reloadComponent}) {
 	const [orders, setOrders] = useState([]);
@@ -133,6 +135,9 @@ export default function Courier_Orders ({rolled, mobile, reloadComponent}) {
 					/>
 			</YMaps>
 			<div className="courier-orders-block">
+				<button className='invert btn-component-refresh' onClick={reloadComponent}>
+					<img src={imgRefresh} alt="" width={40} height={40}/>
+				</button>
 				{orders &&
 					!target ?
 					<>

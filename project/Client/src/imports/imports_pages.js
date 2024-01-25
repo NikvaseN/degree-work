@@ -1,0 +1,12 @@
+export { default as ER404 } from '../pages/404.jsx';
+export { default as Catalog } from '../pages/catalog.jsx';
+export { default as Cakes } from '../pages/cakes.jsx';
+export { default as Candies } from '../pages/candies.jsx';
+export { default as Cart } from '../pages/cart.jsx';
+export { default as History } from '../pages/history.jsx';
+export { default as Ice_cream } from '../pages/ice-cream.jsx';
+export { default as Desserts } from '../pages/desserts.jsx';
+export { default as Favorites } from '../pages/favorites.jsx';
+export { default as Admin } from '../pages/admin.jsx';
+export { default as Courier } from '../pages/courier.jsx';
+export { default as LogInStaff } from '../pages/logInStaff.jsx';

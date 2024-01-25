@@ -16,6 +16,9 @@
 	cursor: pointer;
 	overflow-y: hidden;
 	text-align: center;
+	-webkit-box-shadow: 1px 10px 50px -1px rgba(34, 60, 80, 0.12);
+	-moz-box-shadow: 1px 10px 50px -1px rgba(34, 60, 80, 0.12);
+	box-shadow: 1px 10px 50px -1px rgba(34, 60, 80, 0.12);
 	/* transition: .3s; */
 }
 

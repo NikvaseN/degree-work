@@ -16,6 +16,7 @@ import Orders from '../components/Courier_Orders.jsx'
 import History from '../components/courier_history.jsx'
 import Profile from '../components/courier_profile.jsx'
 import Support from '../components/courier_support.jsx'
+import Swal from 'sweetalert2'
 
 export default function Courier() {
 	const [isLoad, setIsLoad] = React.useState(false)
@@ -66,10 +67,35 @@ export default function Courier() {
 	}
 
 	const onLogout = () =>{
-		if(window.confirm('Вы действительно хотите выйти?')){
-			window.localStorage.removeItem('token')
-			navigate(0)
-		}	
+		Swal.fire({
+			title: 'Выход',
+			text: "Вы действительно хотите выйти?",
+			icon: 'question',
+			showCancelButton: true,
+			// reverseButtons: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			cancelButtonText: 'Нет',
+			confirmButtonText: 'Да',
+		}).then(async (res) =>{
+			if(res.isConfirmed){
+				try{
+					window.localStorage.removeItem('token')
+					navigate(0)
+					Swal.fire(
+						'Успешно!',
+						'Вы успешно вышли',
+						'success'
+					)
+				} catch {
+					Swal.fire(
+						'Ошибка!',
+						'Что-то пошло не так',
+						'error'
+					)
+				}
+			}
+		})		
 	}
 	const [mobile, setMobile] =  React.useState()
 

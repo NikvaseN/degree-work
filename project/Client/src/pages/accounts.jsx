@@ -1,6 +1,5 @@
-import Header from '../components/header.jsx';
 import '../components/normalize.css'
-import {formatDate} from '../components/functions.jsx'
+import {formatDate, escapeHtml} from '../components/functions.jsx'
 import {downloadTable} from '../components/download.jsx'
 import '../components/item_change.css'
 import '../components/table.css'
@@ -8,16 +7,13 @@ import axios from '../axios.js';
 import React from 'react';
 import { io } from 'socket.io-client';
 import {useNavigate } from 'react-router-dom';
-import accept from '../img/icons/accept.png'
 import cancel from '../img/icons/cancel.png'
-import close from '../img/icons/close.png'
 import pen from '../img/icons/pen.png'
 import imgOnline from '../img/icons/green-circle.png'
 import imgOffline from '../img/icons/red-circle.png'
 import plus from '../img/icons/plus_dark.png'
-import next from '../img/icons/page-next.png'
-import last from '../img/icons/page-last.png'
 import swal from 'sweetalert2';
+import imgRefresh from '../img/icons/refresh.png'
 
 export default function Accounts({setTargetComponent, user, reloadComponent}) {
 	const navigate = useNavigate ()
@@ -26,7 +22,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 	const [name, setName] = React.useState('')
 	const [online, setOnline] = React.useState()
 
-
+	
 	const search = async (current) =>{
 		let fields = {
 			name
@@ -61,10 +57,10 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 			title: 'Удалить?',
 			text: "Вы собираетесь УДАЛИТЬ:",
 			html: 
-				`<p style='color: black'>Имя:  ${obj.fullName}</p><br>` +
-				`<p style='color: black'>Телефон:  ${obj.phone}</p><br>` +
-				`<p style='color: black'>Заказов:  ${obj.orderCount}</p><br>` +
-				`<p style='color: black'>Роль:  ${obj.role === 'courier' ? 'Курьер': obj.role === 'user' ? 'Пользователь' : obj.role === 'admin' ? 'Администратор' : obj.role}</p><br>` +
+				`<p style='color: black'>Имя:  ${escapeHtml(obj.fullName)}</p><br>` +
+				`<p style='color: black'>Телефон:  ${escapeHtml(obj.phone)}</p><br>` +
+				`<p style='color: black'>Заказов:  ${escapeHtml(obj.orderCount)}</p><br>` +
+				`<p style='color: black'>Роль:  ${escapeHtml(obj.role === 'courier' ? 'Курьер': obj.role === 'user' ? 'Пользователь' : obj.role === 'admin' ? 'Администратор' : obj.role)}</p><br>` +
 				`<p style='color: black'>Регистрация:  ${formatDate(obj.createdAt, 'D.M.Y')}</p><br>`,
 			icon: 'warning',
 			showCancelButton: true,
@@ -80,7 +76,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 					title: `Подтверждение!`,
 					html:
 					  `<h3>Повторите следующий номер, чтобы удалить аккаунт</h3> <br>` +
-					  `<h5 style='color: red'>${obj.phone}</h5>` +
+					  `<h5 style='color: red'>${escapeHtml(obj.phone)}</h5>` +
 					  `<input id="swal-input1"class="swal2-input"><br>`,
 					focusConfirm: false,
 					icon: 'warning',
@@ -220,7 +216,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 					title: 'Изменить?',
 					text: "Вы собираетесь изменить:",
 					html: 
-						`<p style='color: black'>${changes}</p>`,
+						`<p style='color: black'>${escapeHtml(changes)}</p>`,
 					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: '#3085d6',
@@ -266,21 +262,21 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 				title: 'Редактировать акканут',
 				html:
 				  '<label for="swal-input1" style="margin: 0px 15px">Имя</label>' +
-				  `<input id="swal-input1" value="${obj.fullName}" class="swal2-input"> <br>` +
+				  `<input id="swal-input1" value="${escapeHtml(obj.fullName)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input2">Фамилия</label>' +
-				  `<input id="swal-input2" value="${obj.surname}" class="swal2-input"> <br>` +
+				  `<input id="swal-input2" value="${escapeHtml(obj.surname)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input3">Отчество</label>' +
-				  `<input id="swal-input3" value="${obj.patronymic}" class="swal2-input"> <br>` +
+				  `<input id="swal-input3" value="${escapeHtml(obj.patronymic)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input4">Телефон</label>' +
-				  `<input id="swal-input4" value="${obj.phone}" class="swal2-input"> <br>` +
+				  `<input id="swal-input4" value="${escapeHtml(obj.phone)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input5" style="margin: 0px 10px">Город</label>' +
-				  `<input id="swal-input5" value="${obj.city}" class="swal2-input"> <br>` +
+				  `<input id="swal-input5" value="${escapeHtml(obj.city)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input6" style="margin: 0px 8px">Улица</label>' +
-				  `<input id="swal-input6" value="${obj.street}" class="swal2-input"> <br>` +
+				  `<input id="swal-input6" value="${escapeHtml(obj.street)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input7" style="margin: 0px 13px">Дом</label>' +
-				  `<input id="swal-input7" value="${obj.house}" class="swal2-input"> <br>` +
+				  `<input id="swal-input7" value="${escapeHtml(obj.house)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input8" style="margin: 0px -3px">Квартира</label>' +
-				  `<input id="swal-input8" value="${obj.apartment}" class="swal2-input"> <br>` +
+				  `<input id="swal-input8" value="${escapeHtml(obj.apartment)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input9" style="margin: 0px 6px">Пароль</label>' +
 				  `<input id="swal-input9" class="swal2-input"> <br>` +
 				  '<label for="swal-input10" style="margin: 0px -22px">Дата рождения</label>' +
@@ -308,9 +304,9 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 				title: 'Редактировать акканут',
 				html:
 				  '<label for="swal-input1" style="margin: 0px 15px">Имя</label>' +
-				  `<input id="swal-input1" value=${obj.fullName} class="swal2-input"> <br>` +
+				  `<input id="swal-input1" value=${escapeHtml(obj.fullName)} class="swal2-input"> <br>` +
 				  '<label for="swal-input2">Телефон</label>' +
-				  `<input id="swal-input2" value=${obj.phone} class="swal2-input"> <br>` +
+				  `<input id="swal-input2" value=${escapeHtml(obj.phone)} class="swal2-input"> <br>` +
 				  '<label for="swal-input3" style="margin: 0px 6px">Пароль</label>' +
 				  `<input id="swal-input3" class="swal2-input"> <br>`,
 				focusConfirm: false,
@@ -395,6 +391,9 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 	setMain ()
 	return (
 		<div className='container'>
+			<button className='invert btn-component-refresh' onClick={reloadComponent}>
+				<img src={imgRefresh} alt="" width={40} height={40}/>
+			</button>
 			<div className="inside-container">
 			{/* <Header/> */}
 			<div className="empty-header-admin"></div>

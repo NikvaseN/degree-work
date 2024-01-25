@@ -8,11 +8,13 @@ import cart from '../img/icons/cart.png'
 import settings from '../img/icons/settings.png'
 import {Link} from "react-router-dom";
 import {Context} from '../context.js';
+import Swal from 'sweetalert2';
+
 export default function Header() {
-	const [user, setUser] = React.useState('')
-	const setUp = async () =>{
-		
-		
+
+	const {quantityCart, setQuantityCart, user, isLoad} = useContext(Context);
+
+	const setUpCart = async () =>{
 		if(JSON.parse(localStorage.getItem ('cart')) !== null){
 			let cart = JSON.parse(localStorage.getItem ('cart'))
 			let quantity = cart.reduce((acc, obj) => acc + obj.value, 0);
@@ -21,29 +23,47 @@ export default function Header() {
 		else{
 			setQuantityCart(0)
 		}
-
-		await axios.get('/auth/me').then(res =>{
-			setUser(res.data)
-			setAuth(true)
-		})
 	}
 
 	React.useEffect(() =>{
-		setUp()
+		setUpCart()
 	}, [])
 
+	React.useEffect(() =>{
+		isLoad && user && setAuth(true)
+	}, [isLoad])
+
 	const onClickLogout = () =>{
-		if(window.confirm('Вы действительно хотите выйти?')){
-			// dispatch(logout())
-			window.localStorage.removeItem('token')
-			navigate(0)
-		}	
+		Swal.fire({
+			title: 'Выход',
+			text: "Вы действительно хотите выйти?",
+			icon: 'question',
+			showCancelButton: true,
+			// reverseButtons: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			cancelButtonText: 'Нет',
+			confirmButtonText: 'Да',
+		}).then(async (res) =>{
+			if(res.isConfirmed){
+				try{
+					window.localStorage.removeItem('token')
+					navigate(0)
+					Swal.fire(
+						'Успешно!',
+						'Вы успешно вышли',
+						'success'
+					)
+				} catch {
+					Swal.fire(
+						'Ошибка!',
+						'Что-то пошло не так',
+						'error'
+					)
+				}
+			}
+		})	
 	}
-
-	const [cartEmpty, setCartEmpty] = React.useState(true)
-
-	const {quantityCart, setQuantityCart} = useContext(Context);
-
 
 	const ids = window.location.href;
 	const [auth, setAuth] = React.useState(false)
@@ -103,7 +123,7 @@ export default function Header() {
 	const onLogin = async () => {
 		try {
 			if(authAttempt > 3){
-				alert('Вы ввели более 5 раз неверный телефон или пароль!\n\nПерезапустите страницу!')
+				Swal.fire('Вы ввели более 5 раз неверный телефон или пароль!', 'Перезапустите страницу!', 'warning')
 				return false
 			}
 			const fields = {
@@ -167,14 +187,9 @@ export default function Header() {
 				<button onClick={closePopUp}><Link to='/favorites'><h3 className='header-links favorites'>Избранное</h3></Link></button>
 				<button onClick={closePopUp}><Link to='/history'><h3 className='header-links'>{user.fullName}</h3></Link></button>
 				<button onClick={closePopUp}><h3 className='header-links' onClick={onClickLogout}>Выйти</h3></button>
-				{(user.role === 'moderator' || user.role === 'admin') &&(
+				{(user.role === 'moderator' || user.role === 'admin' || user.role === 'courier') &&(
 					<>
-						<Link to='/admin' className='settings-link settings'><img src={settings} alt="" width='40px' height='40px'/></Link>
-					</>
-				)}
-				{(user.role === 'courier') &&(
-					<>
-						<Link to='/courier' className='settings-link settings'><img src={settings} alt="" width='40px' height='40px'/></Link>
+						<Link to='/staff' className='settings-link settings'><img src={settings} alt="" width='40px' height='40px'/></Link>
 					</>
 				)}
 				</>
@@ -187,9 +202,9 @@ export default function Header() {
 			<Link to='/cart'  onClick={closePopUp}>
 				<div className="circle">
 				<img src={cart} alt="" width='65%' height='65%'/>
-				{/* {!cartEmpty &&( */}
-				<div className="circle-after">{quantityCart}</div>
-				{/* )} */}
+				{quantityCart > 0 &&(
+					<div className="circle-after">{quantityCart}</div>
+				)}
 				</div>
 			</Link>
 			</div>

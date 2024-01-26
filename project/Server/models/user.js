@@ -15,6 +15,8 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		unique:true,
+		minLength: 11,
+		maxLength: 11,
 	},
 	city:{
 		type: String,
@@ -37,10 +39,12 @@ const UserSchema = new mongoose.Schema({
 	},
 	role:{
 		type: String,
-		required: true
+		required: true,
+		default: 'user'
 	},
 	balance:{
 		type: Number,
+		default: 0
 	},
 	imageUrl:{
 		type: String,

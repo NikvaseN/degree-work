@@ -4,6 +4,7 @@ import cors from 'cors';
 import * as dotenv from 'dotenv-flow';
 import routes from './routes.js';
 import Socket from './utils/socket.js';
+import rateLimit from 'express-rate-limit'
 
 dotenv.config()
 
@@ -22,9 +23,18 @@ const ENV = process.env.NAME
 // Настройка сервера 
 const app = express();
 app.use(express.json());
+
 app.use(cors({
 	origin: process.env.CLIENT
 }));
+
+// Ограничение запросов
+const limiter = rateLimit({
+	windowMs: 1000, // 1 сек
+	max: 20, // Запросов в {windowMs} сек
+	message: 'Too many requests from this IP, please try again later.',
+});
+app.use(limiter);
 
 // Подключение маршрутов
 app.use('/', routes);

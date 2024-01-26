@@ -247,7 +247,7 @@ export default function History() {
 				}
 				{(orders).map((obj, index) => (
 					!cheackOpenItem(index) ? (
-						<div className="history-item" onClick={() => setOpenedItems(index)}>
+						<div key={obj._id} className="history-item" onClick={() => setOpenedItems(index)}>
 							{day(obj.createdAt)}
 							{hour(obj.createdAt)}
 							{fullDate(index)}
@@ -266,7 +266,7 @@ export default function History() {
 								}
 						</div>
 					):(
-						<div className="history-item open" onClick={() => setOpenedItems(index)}>
+						<div key={obj._id} className="history-item open" onClick={() => setOpenedItems(index)}>
 							{day(obj.createdAt)}
 							{hour(obj.createdAt)}
 							{fullDate(index)}
@@ -309,7 +309,7 @@ export default function History() {
 							<div className="hr-medium history"></div>
 							{(obj.products).map((obj, index) => (
 								obj.product ? (
-								<div className="cart-item history">
+								<div key={obj.product._id} className="cart-item history">
 									<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="" width={300} height={220}/>
 									<div className="cart-item-text">
 										<h2 className='history-item__name'>{obj.product.name}</h2>
@@ -322,7 +322,7 @@ export default function History() {
 								</div>
 								) :
 								(
-									<div className="cart-item history">
+									<div key={obj.product._id} className="cart-item history">
 										<img src={undefined} alt="" width={300} height={220}/>
 										<div className="cart-item-text">
 											<h2 style={{fontSize : 24, marginTop:15}}>Товар не найден</h2>

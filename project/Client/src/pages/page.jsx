@@ -388,7 +388,7 @@ export default function Page({title, category, title_ru, title_header}) {
 					<div className="items-block-cakes">
 					{itemsToRender.map((obj, index) => (
 						cheackActive(index + i * 2) &&
-						<div className="item-cake">
+						<div key={obj._id} className="item-cake">
 							<div className='item-img-block-cake' onClick={() => addCart(obj, 1)}>
 								<img src={`${process.env.REACT_APP_IMG_URL}${obj.imageUrl}`} alt="" width='100%' height='100%' className='item-img-cake'/>
 								<img src={basket} alt="" width='160px' height='160px' className='item-basket'/>

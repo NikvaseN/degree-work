@@ -26,6 +26,7 @@ export default function App() {
 			<Route path='/cart' element = {<Pages.Cart/>}/>
 			<Route path='/history' element = {<Pages.History/>}/>
 			<Route path='/favorites' element = {<Pages.Favorites/>}/>
+			<Route path='/profile' element = {<Pages.Profile/>}/>
 
 			<Route path='/admin' element = {<Pages.Admin/>}/>
 			<Route path='/courier' element = {<Pages.Courier/>}/>

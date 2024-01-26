@@ -75,7 +75,7 @@ export default function Courier_History ({rolled, mobile, reloadComponent}) {
 		main.push(
 				(orders).map((obj, index) => (
 					!cheackOpenItem(index) ? (
-						<div id="courier-history-item" className="history-item" onClick={() => setOpenedItems(index)}>
+						<div key={obj.number} id="courier-history-item" className="history-item" onClick={() => setOpenedItems(index)}>
 							<div className='icon_status ended' ></div>
 							<p>№ {obj.number}</p>
 							<p className='history-order__date'>{formatDate(obj.createdAt, 'D-M-Y')}</p>
@@ -84,7 +84,7 @@ export default function Courier_History ({rolled, mobile, reloadComponent}) {
 							<p>Итого: {obj.fullPrice.toLocaleString()} ₽</p>
 						</div>
 					):(
-						<div className="history-item open" onClick={() => setOpenedItems(index)}>
+						<div key={obj.number} className="history-item open" onClick={() => setOpenedItems(index)}>
 							<div className="history-item-title">
 								<p>№ {obj.number}</p>
 								{obj.methodDelivery === 'delivery' && <p>{`${obj.street}, д. ${obj.house}, кв. ${obj.apartment}`}</p>}

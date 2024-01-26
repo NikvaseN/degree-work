@@ -147,7 +147,7 @@ export default function Courier_Orders ({rolled, mobile, reloadComponent}) {
 								{!mobile && <p>Кол-во товаров</p>}
 						</div>
 							{orders.map((obj) =>(
-								<div onClick={() =>changeTarget(obj)} className="courier-orders-item">
+								<div key={obj.number} onClick={() =>changeTarget(obj)} className="courier-orders-item">
 										<p>{!mobile && 'Заказ'} № {obj.number}</p>
 										<h3>{obj.street}, д. {obj.house}, кв. {obj.apartment}</h3>
 										{!mobile && <p style={{padding: 5, fontSize:14}}>Товаров: {obj.products.length}</p>}
@@ -178,7 +178,7 @@ export default function Courier_Orders ({rolled, mobile, reloadComponent}) {
 							</div>
 							{target && target.products.map((obj) =>(
 								obj.product &&
-								<div className='courier-orders-products' style={{justifyContent: 'space-between'}}>
+								<div key={obj.product._id} className='courier-orders-products' style={{justifyContent: 'space-between'}}>
 									<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="" width={70} height={50}/>
 									<h3>{obj.product.name}</h3>
 									<h3>{obj.value} шт.</h3>

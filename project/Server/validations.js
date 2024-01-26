@@ -53,3 +53,9 @@ export const accountUpdateValidation = [
 	body('house', 'Введите дом проживания').isString().isLength({ min: 1}).optional(),
 	body('apartment', 'Введите квартиру проживания').isString().isLength({ min: 1}).optional(),
 ];
+
+export const recipeCreateValidation = [
+	body('name', 'Введите название рецепта').isLength({ min: 2, max: 100}).isString(),
+	body('composition', 'Введите состав').isLength({ min: 2, max: 100}).isString(),
+	body('method', 'Введите рецепт').isLength({ min: 2 }).isString(),
+];

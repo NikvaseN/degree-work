@@ -43,7 +43,7 @@ export default function Admin_account_create() {
 		let errs = err.response.data
 		let str = ''
 		if (errs.length >= 1) {
-			errs.map((obj) => str = str + '- '+  obj.msg + '<br><br>')
+			errs.forEach((obj) => str = str + '- '+  obj.msg + '<br><br>')
 		}
 		else{
 			str = err.response.data.msg

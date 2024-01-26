@@ -53,7 +53,7 @@ export default function Courier_Profile ({user, rolled, mobile, reloadComponent}
 
 			// Добавление в объект result поля из формы, которые были изменены
 			let result = {};
-			Object.keys(formValues).map(key => {
+			Object.keys(formValues).forEach(key => {
 				if (key === "password" && formValues[key] === "") {
 					return;
 				}
@@ -76,7 +76,7 @@ export default function Courier_Profile ({user, rolled, mobile, reloadComponent}
 			if (result && Object.values(result).length >= 1) {
 
 				let changes = '';
-				Object.keys(result).map(key =>{
+				Object.keys(result).forEach(key =>{
 					let prevValue = user[key]
 					if (key === "password") {
 						prevValue = '**********'
@@ -84,7 +84,7 @@ export default function Courier_Profile ({user, rolled, mobile, reloadComponent}
 					if (key === "birthday") {
 						prevValue = formatDate(user[key], 'D.M.Y')
 					}
-					changes += `<span style='margin-right:20px'>${prevValue}</span> 🠖 <span style='margin-left:20px'>${result[key]}</span><br><br>`
+					changes += `<span style='margin-right:20px'>${escapeHtml(prevValue)}</span> 🠖 <span style='margin-left:20px'>${escapeHtml(result[key])}</span><br><br>`
 				})
 
 				// Подтверждение
@@ -92,7 +92,7 @@ export default function Courier_Profile ({user, rolled, mobile, reloadComponent}
 					title: 'Изменить?',
 					text: "Вы собираетесь изменить:",
 					html: 
-						`<p style='color: black'>${escapeHtml(changes)}</p>`,
+						`<p style='color: black'>${changes}</p>`,
 					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: '#3085d6',
@@ -114,7 +114,7 @@ export default function Courier_Profile ({user, rolled, mobile, reloadComponent}
 						}
 					})
 					result['prevPassword'] = formValues.password
-					await axios.patch('/courier/profile', result).then(() =>{
+					await axios.patch('/profile', result).then(() =>{
 						Swal.fire(
 							'Успешно!',
 							'Аккаунт успешно обновлен.',
@@ -126,7 +126,7 @@ export default function Courier_Profile ({user, rolled, mobile, reloadComponent}
 						let errs = err.response.data
 						let str = '';
 						if (errs.length >= 1) {
-							errs.map((obj) => str += '- ' +  obj.msg + '<br><br>')
+							errs.forEach((obj) => str += '- ' +  obj.msg + '<br><br>')
 						}
 						else{
 							str = err.response.data.msg
@@ -165,9 +165,9 @@ export default function Courier_Profile ({user, rolled, mobile, reloadComponent}
 				  '<label for="swal-input8" style="margin: 0px -3px">Квартира</label>' +
 				  `<input id="swal-input8" value="${escapeHtml(user.apartment)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input9" style="margin: 0px 6px">Пароль</label>' +
-				  `<input id="swal-input9" class="swal2-input"> <br>` +
-				  '<label for="swal-input10" style="margin: 0px -22px">Дата рождения</label>' +
-				  `<input id="swal-input10" value="${formatDate(user.birthday,'D.M.Y')}" class="swal2-input"> <br>`,
+				  `<input id="swal-input9" class="swal2-input"> <br>`,
+				//   '<label for="swal-input10" style="margin: 0px -22px">Дата рождения</label>' +
+				//   `<input id="swal-input10" value="${formatDate(user.birthday,'D.M.Y')}" class="swal2-input"> <br>`,
 				focusConfirm: false,
 				preConfirm: () => {
 				  return {
@@ -180,7 +180,7 @@ export default function Courier_Profile ({user, rolled, mobile, reloadComponent}
 					house: document.getElementById('swal-input7').value,
 					apartment: document.getElementById('swal-input8').value,
 					password: document.getElementById('swal-input9').value,
-					birthday: document.getElementById('swal-input10').value
+					// birthday: document.getElementById('swal-input10').value
 				  }
 				}
 			})

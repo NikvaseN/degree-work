@@ -11,12 +11,8 @@ const app = express();
 app.get('/couriers/count', checkAuth, checkModerator, CourierController.getAllCount)
 app.post('/couriers', checkAuth, checkModerator, courierCreateValidation, handleValidationErrors, CourierController.create)
 
-
 // Статистика курьера
 app.get('/courier/stats', checkAuth, checkCourier, CourierController.stats)
-
-// Редактирование профиля
-app.patch('/courier/profile', checkAuth, checkCourier, accountUpdateValidation, handleValidationErrors, CourierController.update)
 
 // Обновление фото профиля
 app.patch('/courier/avatar', checkAuth, checkCourier, CourierController.avatar)
@@ -29,7 +25,6 @@ app.get('/courier/orders', checkAuth, checkCourier, CourierController.orders)
 
 // Получение активного (для доставки) заказа
 app.get('/courier/working', checkAuth, checkCourier, CourierController.working)
-
 
 // Принять заказ
 app.post('/courier/take/:id', checkAuth, checkCourier, CourierController.take)

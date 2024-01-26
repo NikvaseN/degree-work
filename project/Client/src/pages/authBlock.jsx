@@ -42,7 +42,7 @@ export default function AuthBlock() {
 				{errors &&
 				<div className="errors-block">
 					{errors[0] ? errors?.map((obj, i) => (
-					<p className='incorrect'>{obj.msg}</p>
+						<p key={obj.msg} className='incorrect'>{obj.msg}</p>
 					))
 					:
 					<p className='incorrect'>{errors.msg}</p>

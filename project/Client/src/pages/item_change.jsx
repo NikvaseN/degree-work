@@ -236,41 +236,41 @@ export default function Item_change({reloadComponent}) {
 
 			(findedItems).map((obj, index) => (
 				cheackActive(index)&&
-				<div className="cart-item">
-				<img src={`${process.env.REACT_APP_IMG_URL}${obj.imageUrl}`} alt="" width={383} height={260}/>
-				<div className="cart-item-text item-change">
-					{cheackChanging(index) ? 
-					(
-						<>
-							<input style={{fontSize : 30, marginTop:15}} className='change-item-input' type="text" defaultValue={obj.name} onChange ={(e) => setChangedName(e.target.value)}/> 
-							<input style={{marginBottom : 60, marginTop: 45}} className='change-item-input' type="text" defaultValue={obj.composition} onChange ={(e) => setChangedComposition(e.target.value)}/> 
-							<input className='change-item-input' type="text" defaultValue={obj.price} onChange ={(e) => setChangedPrice(e.target.value)}/> 
-						</>
-					) : 
-					(
-						<>
-							<h2 style={{fontSize : 30, marginTop:15}}>{obj.name}</h2>
-							<h3 style={{marginBottom : 60, marginTop: 45}}>Состав: <span>{obj.composition}</span></h3>
-							<h3>{obj.price.toLocaleString()} ₽</h3>
-						</>
-					)}
-						
-					</div>
+				<div key={obj._id} className="cart-item">
+					<img src={`${process.env.REACT_APP_IMG_URL}${obj.imageUrl}`} alt="" width={383} height={260}/>
+					<div className="cart-item-text item-change">
+						{cheackChanging(index) ? 
+						(
+							<>
+								<input style={{fontSize : 30, marginTop:15}} className='change-item-input' type="text" defaultValue={obj.name} onChange ={(e) => setChangedName(e.target.value)}/> 
+								<input style={{marginBottom : 60, marginTop: 45}} className='change-item-input' type="text" defaultValue={obj.composition} onChange ={(e) => setChangedComposition(e.target.value)}/> 
+								<input className='change-item-input' type="text" defaultValue={obj.price} onChange ={(e) => setChangedPrice(e.target.value)}/> 
+							</>
+						) : 
+						(
+							<>
+								<h2 style={{fontSize : 30, marginTop:15}}>{obj.name}</h2>
+								<h3 style={{marginBottom : 60, marginTop: 45}}>Состав: <span>{obj.composition}</span></h3>
+								<h3>{obj.price.toLocaleString()} ₽</h3>
+							</>
+						)}
+							
+						</div>
 
-					{cheackChanging(index) ? 
-					(
-						<>
-						<button className='change-item-accept btn-item_change' onClick={() => sendChangedItem(obj)}><img src={accept} alt="" width='26' height='26'/></button>
-						<button className='change-item btn-item_change' onClick={() => startChanging(index, obj)}><img src={cancel} alt="" width='28' height='28'/></button>
-						</>
-					) 
-					: 
-					(
-						<button className='change-item btn-item_change' onClick={() => startChanging(index, obj)}><img src={pen} alt="" width='28' height='28'/></button>
-					)}
+						{cheackChanging(index) ? 
+						(
+							<>
+							<button className='change-item-accept btn-item_change' onClick={() => sendChangedItem(obj)}><img src={accept} alt="" width='26' height='26'/></button>
+							<button className='change-item btn-item_change' onClick={() => startChanging(index, obj)}><img src={cancel} alt="" width='28' height='28'/></button>
+							</>
+						) 
+						: 
+						(
+							<button className='change-item btn-item_change' onClick={() => startChanging(index, obj)}><img src={pen} alt="" width='28' height='28'/></button>
+						)}
 
-				<button className='close-item-cart' onClick={() => deleteItem(index)}><img src={close} alt="" width='28' height='28'/></button>
-			</div>
+					<button className='close-item-cart' onClick={() => deleteItem(index)}><img src={close} alt="" width='28' height='28'/></button>
+				</div>
 			))
 				
 		)

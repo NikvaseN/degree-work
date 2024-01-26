@@ -76,6 +76,112 @@
 	border: 3px solid white;
 }
 
+.suggest-recipe>button{
+	transition: .3s;
+}
+
+.suggest-recipe>button:hover{
+	transform: scale(1.1);
+}
+
+.suggest-recipe__form_block{
+	transition: .3s;
+	overflow: hidden;
+}
+
+.suggest-recipe__form{
+	font-size: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
+
+.suggest-recipe__form__textarea{
+	background-color: #F8F8F8;
+	border-radius: 0.5em;
+	width: 80%;
+	padding: 10px;
+	font-size: 15px;
+	margin-bottom: 20px;
+}
+.suggest-recipe__form__textarea::-webkit-scrollbar {
+	width: 0px;
+	height: 0px;
+}
+
+ /* checkbox */
+
+@keyframes pop {
+    0% {
+        opacity: 0;
+    }
+    75% {
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.2);
+    }
+}
+
+.checkbox-rect>label{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	gap: -1px;
+	transition: .3s;
+	font-size: 16;
+	margin-top: 10px;
+}
+
+.checkbox-rect>label:hover{
+	cursor: pointer;
+	color: #d8d8d8;
+}
+
+.checkbox-pop{
+    display: none;
+}
+
+.checkbox-pop + label span {
+    display: inline-block;
+    width: 25px;
+    height: 19px;
+    margin: 0 5px -4px 0;
+}
+
+.checkbox-pop + label span:before,
+.checkbox-pop + label span:after {
+    transition: all 0.3s ease-in-out;
+    content: "";
+    position: absolute;
+    z-index: 1;
+    width: 14px; /* Здесь должна быть определена переменная $checkbox-size */
+    height: 14px; /* Здесь должна быть определена переменная $checkbox-size */
+    background: transparent;
+    border: 2px solid white; /* Здесь должна быть определена переменная $border-color */
+}
+
+.checkbox-pop:checked + label span:before {
+    animation: pop 0.3s ease;
+    z-index: 100;
+    background: white; /* Здесь должна быть определена переменная $border-color */
+}
+
+/* checkbox */
+
+.suggest-recipe__form__submit{
+	font-size: 25px;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	transition: .3s;
+}
+
+.suggest-recipe__form__submit:hover{
+	transform: scale(1.1);
+}
+
 .profile-logo-add{
 	position: absolute;
 	opacity: 0;

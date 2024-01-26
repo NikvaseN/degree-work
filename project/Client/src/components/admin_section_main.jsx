@@ -15,13 +15,13 @@ export default function Admin_section_main() {
 
 		const orders = Object.entries(data.ordersData).map(([key, value]) => ({ key, value }))
 		const couriers = Object.entries(data.couriersData).map(([key, value]) => ({ key, value }))
-		orders.map((obj) => {
+		orders.forEach((obj) => {
 			let pb = document.getElementById(`${obj.key}`)
 			if(pb){
 				pb.style.width = `${obj.value / data.ordersData.orders * 100}%`;
 			}
 		})
-		couriers.map((obj) => {
+		couriers.forEach((obj) => {
 			let pb = document.getElementById(`${obj.key}`)
 			if(pb){
 				pb.style.width = `${obj.value / data.couriersData.couriers * 100}%`;
@@ -113,13 +113,13 @@ export default function Admin_section_main() {
 		e.target.classList.add('start')
 		const orders = Object.entries(ordersData).map(([key, value]) => ({ key, value }))
 		const couriers = Object.entries(couriersData).map(([key, value]) => ({ key, value }))
-		orders.map((obj) => {
+		orders.forEach((obj) => {
 			let pb = document.getElementById(`${obj.key}`)
 			if(pb){
 				pb.style.width = `0%`;
 			}
 		})
-		couriers.map((obj) => {
+		couriers.forEach((obj) => {
 			let pb = document.getElementById(`${obj.key}`)
 			if(pb){
 				pb.style.width = `0%`;

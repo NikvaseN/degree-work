@@ -10,13 +10,22 @@ import cheackAuthorNonAuth from '../utils/cheackAuthorNonAuth.js';
 import handleValidationErrors from '../utils/handleValidationErrors.js';
 import checkModerator from '../utils/checkModerator.js';
 import express from 'express';
+import rateLimit from 'express-rate-limit'
 
 const app = express();
 
+const limiter = rateLimit({
+	windowMs: 1500, // 1.5 сек
+	max: 2, // Запросов в {windowMs} сек
+	message: 'Too many requests from this IP, please try again later.',
+});
+
 // Пользователь
-app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login); 
-app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
+app.post('/auth/login', limiter, loginValidation, handleValidationErrors, UserController.login); 
+app.post('/auth/register',  limiter, registerValidation, handleValidationErrors, UserController.register);
 app.get('/auth/me', checkAuth, UserController.getMe);
+app.patch('/profile', checkAuth, accountUpdateValidation, handleValidationErrors, UserController.update)
+app.post('/profile/delete', checkAuth, UserController.remove)
 
 // Заказы: администратор
 app.get('/orders/active', checkAuth, checkModerator, OrderController.getActive);
@@ -47,8 +56,8 @@ app.get('/like', checkAuth, LikeController.getUser);
 
 // Аккаунты: администратор
 app.post('/accounts/search', checkAuth, checkModerator, UserController.search)
-app.patch('/accounts/:id', checkAuth, checkModerator, accountUpdateValidation, handleValidationErrors, UserController.account_update)
-app.delete('/accounts/:id', checkAuth, checkModerator, UserController.remove)
+app.patch('/accounts/:id', checkAuth, checkModerator, accountUpdateValidation, handleValidationErrors, UserController.updateAccount)
+app.delete('/accounts/:id', checkAuth, checkModerator, UserController.removeAccount)
 
 // Админ:
 app.patch('/admin/photo', checkAuth, checkModerator, UserController.photoUpdate)

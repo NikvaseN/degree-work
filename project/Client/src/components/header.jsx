@@ -185,7 +185,8 @@ export default function Header() {
 			{auth ?(
 				<>
 				<button onClick={closePopUp}><Link to='/favorites'><h3 className='header-links favorites'>Избранное</h3></Link></button>
-				<button onClick={closePopUp}><Link to='/history'><h3 className='header-links'>{user.fullName}</h3></Link></button>
+				<button onClick={closePopUp}><Link to='/history'><h3 className='header-links'>Заказы</h3></Link></button>
+				<button onClick={closePopUp}><Link to='/profile'><h3 className='header-links'>{user.fullName}</h3></Link></button>
 				<button onClick={closePopUp}><h3 className='header-links' onClick={onClickLogout}>Выйти</h3></button>
 				{(user.role === 'moderator' || user.role === 'admin' || user.role === 'courier') &&(
 					<>
@@ -221,7 +222,7 @@ export default function Header() {
 				<div className="errors-block">
 					{errors && Array.isArray(errors) ?(
 						errors?.map((obj, i) => (
-						<p className='incorrect'>{obj.msg}</p>
+							<p key={obj.msg} className='incorrect'>{obj.msg}</p>
 						))
 					)
 					:

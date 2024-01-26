@@ -12,7 +12,7 @@ export function downloadTable (data) {
 				'admin': [],
 			};
 
-			data.map(user => {
+			data.forEach(user => {
 				const role = user.role
 				let userData;
 				if(role === 'admin'){

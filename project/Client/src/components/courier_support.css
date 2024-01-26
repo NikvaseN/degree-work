@@ -150,6 +150,11 @@
 	margin-top: -5px;
 }
 
+.change-profile._delete{
+	border-color: red;
+	margin-top: 50px;
+}
+
 .appeales-block{
 	width: 300px;
 	min-height: 300px;

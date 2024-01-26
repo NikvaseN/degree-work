@@ -174,7 +174,7 @@ export const search = async (req,res) => {
 }
 
 // Обновить аккаунт
-export const account_update = async (req,res) => {
+export const updateAccount = async (req,res) => {
 	try {
 		const accountId = req.params.id;
 
@@ -251,8 +251,8 @@ export const photoUpdate = async (req,res) => {
 	}
 }
 
-// Удалить аккаунт
-export const remove = async (req,res) =>{
+// Удалить аккаунт (Администратор)
+export const removeAccount = async (req,res) =>{
 	try{
 		const accountId = req.params.id;
 		userModel.findOneAndRemove({
@@ -315,6 +315,113 @@ export const getOne = async (req,res) =>{
 		console.log(err)
 		res.status(500).json({
 			msg:"Не удалось найти пользователя"
+		})
+	}
+}
+
+// Редактировать профиль
+export const update = async (req,res) => {
+	try {
+		const accountId = req.userId;
+		const updateFields = {};
+		const fieldsToUpdate = [
+		  'fullName',
+		  'surname',
+		  'patronymic',
+		  'phone',
+		  'city',
+		  'street',
+		  'house',
+		  'apartment',
+		//   'birthday',
+		  'imageUrl',
+		];
+
+		/// Проверка пароля 
+		const user = await userModel.findById(accountId);
+		if (!user){
+			return res.status(403).json({
+				msg:"Пользователь не найден"
+			});
+		}
+
+		const isValidPass = await bcrypt.compare(req.body.prevPassword, user._doc.passwordHash);
+		if (!isValidPass){
+			return res.status(400).json({
+				msg:"Неверный пароль"
+			})
+		}
+		///
+
+		// Проверяем какие поля нужно изменить
+		fieldsToUpdate.map(field => {
+			if (req.body[field]) {
+				updateFields[field] = req.body[field];
+			}
+		});
+
+		if (req.body.password) {
+			const password = req.body.password;
+			const salt = await bcrypt.genSalt(10);
+			const hash = await bcrypt.hash(password, salt);
+			updateFields.passwordHash = hash;
+		}
+
+		if (req.body.phone) {
+			if(userModel.findOne({phone: req.body.phone})){
+				return res.status(400).json({
+					msg:"Аккаунт с таким номером телефона уже существует"
+				})
+			}
+		}
+
+		await userModel.updateOne(
+			{
+				_id: accountId
+			},
+			updateFields
+		);
+	  
+		res.status(200).json({
+			msg:"Аккаунт успешно обновлен"
+		})
+
+	} catch (err) {
+		console.log(err)
+		res.status(500).json({
+			msg:"Не удалось обновить аккаунт"
+		})
+	}
+}
+
+export const remove = async (req,res) => {
+	try {
+		const accountId = req.userId;
+
+		const user = await userModel.findById(accountId);
+		if (!user){
+			return res.status(403).json({
+				msg:"Пользователь не найден"
+			});
+		}
+
+		const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);
+		if (!isValidPass){
+			return res.status(403).json({
+				msg:"Неверный пароль"
+			})
+		}
+
+		await userModel.deleteOne({_id: accountId});
+	  
+		res.status(200).json({
+			msg:"Аккаунт успешно удален"
+		})
+
+	} catch (err) {
+		console.log(err)
+		res.status(500).json({
+			msg:"Не удалось удалить аккаунт"
 		})
 	}
 }

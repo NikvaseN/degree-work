@@ -99,7 +99,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 							let errs = err.response.data
 							let str = '';
 							if (errs.length >= 1) {
-								errs.map((obj) => str += '- ' +  obj.msg + '<br><br>')
+								errs.forEach((obj) => str += '- ' +  obj.msg + '<br><br>')
 							}
 							else{
 								str = err.response.data.msg
@@ -177,7 +177,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 
 			// Добавление в объект result поля из формы, которые были изменены
 			let result = {};
-			Object.keys(formValues).map(key => {
+			Object.keys(formValues).forEach(key => {
 				if (key === "password" && formValues[key] === "") {
 					return;
 				}
@@ -200,7 +200,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 			if (result && Object.values(result).length >= 1) {
 
 				let changes = '';
-				Object.keys(result).map(key =>{
+				Object.keys(result).forEach(key =>{
 					let prevValue = obj[key]
 					if (key === "password") {
 						prevValue = '**********'
@@ -208,7 +208,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 					if (key === "birthday") {
 						prevValue = formatDate(obj[key], 'D.M.Y')
 					}
-					changes += `<span style='margin-right:20px'>${prevValue}</span> 🠖 <span style='margin-left:20px'>${result[key]}</span><br><br>`
+					changes += `<span style='margin-right:20px'>${escapeHtml(prevValue)}</span> 🠖 <span style='margin-left:20px'>${escapeHtml(result[key])}</span><br><br>`
 				})
 
 				// Подтверждение
@@ -216,7 +216,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 					title: 'Изменить?',
 					text: "Вы собираетесь изменить:",
 					html: 
-						`<p style='color: black'>${escapeHtml(changes)}</p>`,
+						`<p style='color: black'>${changes}</p>`,
 					icon: 'question',
 					showCancelButton: true,
 					confirmButtonColor: '#3085d6',
@@ -239,7 +239,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 							let errs = err.response.data
 							let str = '';
 							if (errs.length >= 1) {
-								errs.map((obj) => str += '- ' +  obj.msg + '<br><br>')
+								errs.forEach((obj) => str += '- ' +  obj.msg + '<br><br>')
 							}
 							else{
 								str = err.response.data.msg

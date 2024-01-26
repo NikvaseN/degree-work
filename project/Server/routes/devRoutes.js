@@ -13,7 +13,7 @@ app.delete('/dev/orders/:quantity', checkAuth, checkModerator, async (req,res) =
 	try {
 		let quantity = req.params.quantity;
 		const data = await OrderModel.find().limit(quantity);
-		data.map((obj) => (obj.remove()))
+		data.forEach((obj) => (obj.remove()))
 		res.send(`${data.length} закаазов удалено.`)
 	} catch (error) {
 		res.status(500).send(`Ошибка при удалении заказов: ${error}`);

@@ -184,7 +184,7 @@ export default function Cart() {
 				const addressData =  data.response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.Address.Components
 	
 				// Заполнение адреса, найденными данными адреса
-				addressData.map((obj) =>{
+				addressData.forEach((obj) =>{
 					Address[obj.kind] = obj.name
 				})
 				coordinates = [Number(coordinatesData[1]), Number(coordinatesData[0])]
@@ -291,26 +291,26 @@ export default function Cart() {
 				
 				{(cartItems).map((obj, index) => (
 					checkActiveItem(index) && obj.product &&(
-					<div className="cart-item">
-					<div className='cart-item__img-block' style={{width: 360}}>
-						<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="Изображение товара" width={360} height={260}/>
-					</div>
-					<div className="cart-item-text">
-						<h2 style={{fontSize : 30, marginTop:15}}>{obj.product.name}</h2>
-						<h3 style={{marginBottom : 60, marginTop: 45}}>Состав: <span>{obj.product.composition}</span> </h3>
-						<div className="price-block">
-							<div className="quantity-items pag-cart">
-								<button style={{ fontSize : 40, marginTop:-10}} onClick={() => setValueDown(index)}>-</button>
-								<p>{value[index]}</p>
-								{/* <input type="text" defaultValue={value} onChange ={(e) => setPag(e.target.value)}/> */}
-								<button style={{ fontSize : 40, marginTop:-2} } onClick={() => setValueUp(index)} >+</button>
+					<div key={obj.product._id} className="cart-item">
+						<div className='cart-item__img-block' style={{width: 360}}>
+							<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="Изображение товара" width={360} height={260}/>
+						</div>
+						<div className="cart-item-text">
+							<h2 style={{fontSize : 30, marginTop:15}}>{obj.product.name}</h2>
+							<h3 style={{marginBottom : 60, marginTop: 45}}>Состав: <span>{obj.product.composition}</span> </h3>
+							<div className="price-block">
+								<div className="quantity-items pag-cart">
+									<button style={{ fontSize : 40, marginTop:-10}} onClick={() => setValueDown(index)}>-</button>
+									<p>{value[index]}</p>
+									{/* <input type="text" defaultValue={value} onChange ={(e) => setPag(e.target.value)}/> */}
+									<button style={{ fontSize : 40, marginTop:-2} } onClick={() => setValueUp(index)} >+</button>
+								</div>
+								<h3>{price[index].toLocaleString()} ₽</h3>
 							</div>
-							<h3>{price[index].toLocaleString()} ₽</h3>
-						</div>
-							
-						</div>
-					<button className='close-item-cart' onClick={() => deleteItemCart(index)}><img src={close} alt="" width='28' height='28'/></button>
-				</div>
+								
+							</div>
+						<button className='close-item-cart' onClick={() => deleteItemCart(index)}><img src={close} alt="" width='28' height='28'/></button>
+					</div>
 					)
 				))}
 				

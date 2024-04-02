@@ -1,10 +1,19 @@
 import OrderModel from '../models/order.js';
 import UserModel from '../models/user.js';
 import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 
 // Создание аккаунта курьера
 export const create = async (req,res) =>{
 	try {
+
+		const existingUser = await UserModel.findOne({ phone: req.body.phone });
+		if (existingUser) {
+			return res.status(409).json({
+				msg: 'Аккаунт с таким номером телефона уже существует'
+			});
+		}
+
 		const password = req.body.password;
 		const salt = await bcrypt.genSalt(10);
 		const hash = await bcrypt.hash(password, salt);
@@ -31,7 +40,7 @@ export const create = async (req,res) =>{
 	} catch (err) {
 		console.log(err)
 		res.status(500).json({
-			message:"Не удалось создать курьера"
+			message:"Не удалось создать аккаунт"
 		})
 	}
 }
@@ -40,8 +49,15 @@ export const create = async (req,res) =>{
 export const take = async (req,res) =>{
 	try {
 		const courier = req.userId;
-		const order =  req.params.id;
-		const active = await OrderModel.find({status : 'pending', courier: req.userId })
+		const order = req.params.id;
+
+		if (!mongoose.isValidObjectId(order)) {
+			return res.status(400).json({
+			  	msg: 'Некорректный тип идентификатора',
+			});
+		}
+
+		const active = await OrderModel.find({status : 'delivering', courier: req.userId })
 		if(active.length){
 			res.status(403).json({
 				msg:"У вас уже есть активный заказ"
@@ -49,7 +65,7 @@ export const take = async (req,res) =>{
 		}
 		else{
 			OrderModel.findByIdAndUpdate(order, 
-				{'courier': courier}, 
+				{'courier': courier, 'status': 'delivering'}, 
 				(err, doc) =>{
 					if (err){
 						console.log(err)
@@ -79,11 +95,18 @@ export const take = async (req,res) =>{
 	}
 }
 
-// Принятие заказа
+// Завершение заказа
 export const finish = async (req,res) =>{
 	try {
 		const courier = req.userId;
 		const orderId =  req.params.id;
+
+		if (!mongoose.isValidObjectId(orderId)) {
+			return res.status(400).json({
+			  	msg: 'Некорректный тип идентификатора',
+			});
+		}
+
 		const order = await OrderModel.find({ _id: orderId, courier: courier})
 		OrderModel.findByIdAndUpdate(order, 
 			{'status': 'ended'}, 
@@ -121,9 +144,15 @@ export const cancel = async (req,res) =>{
 		const courier = req.userId;
 		const order =  req.params.id;
 
+		if (!mongoose.isValidObjectId(order)) {
+			return res.status(400).json({
+			  	msg: 'Некорректный тип идентификатора',
+			});
+		}
+
 		OrderModel.findOneAndUpdate(
 			{ _id: order, courier: courier},
-			{ $unset: { courier: 1 } },
+			{ $unset: { courier: 1 }, $set: { status: 'ready' } },
 			{ new: true },
 			(err, result) => {
 				if (err){
@@ -153,7 +182,7 @@ export const cancel = async (req,res) =>{
 // Получение заказов для доставки
 export const orders = async (req,res) =>{
 	try{
-		const orders = await OrderModel.find({status : 'pending', courier: null, methodDelivery: 'delivery'}).populate('products.product').populate('user')
+		const orders = await OrderModel.find({status : 'ready', courier: null, methodDelivery: 'delivery'}).populate('products.product').populate('user')
 		res.json(
 			orders
 		);
@@ -169,7 +198,7 @@ export const orders = async (req,res) =>{
 // Получение активного (для доставки) заказа
 export const working = async (req,res) =>{
 	try{
-		const order = await OrderModel.find({status : 'pending', courier: req.userId }).populate('products.product').populate('user')
+		const order = await OrderModel.find({status : 'delivering', courier: req.userId }).populate('products.product').populate('user')
 		res.json(
 			order
 		);
@@ -187,16 +216,22 @@ export const getAllCount = async (req, res) => {
 	try{
 		const orders = await OrderModel.countDocuments({});
 		const ordersNew = await OrderModel.countDocuments({status: 'new'});
-		const ordersPending = await OrderModel.countDocuments({status: 'pending'});
+		const ordersAccept = await OrderModel.countDocuments({status: 'accept'});
+		const ordersCooking = await OrderModel.countDocuments({status: 'cooking'});
+		const ordersReady = await OrderModel.countDocuments({status: 'ready'});
+		const ordersDelivering = await OrderModel.countDocuments({status: 'delivering'});
 		const ordersCanceled = await OrderModel.countDocuments({status: 'canceled'});
 		const ordersEnded = await OrderModel.countDocuments({status: 'ended'});
 
 		const couriers = await UserModel.countDocuments({role: 'courier'});
-		const working = await OrderModel.countDocuments({status:'pending', courier: { $ne: null }});
+		const working = await OrderModel.countDocuments({status:'delivering', courier: { $ne: null }});
 		const ordersData = {
 			orders: orders,
-			new: ordersNew, 
-			pending: ordersPending,
+			new: ordersNew,
+			accept: ordersAccept,
+			cooking: ordersCooking,
+			ready: ordersReady,
+			delivering: ordersDelivering,
 			canceled: ordersCanceled,
 			ended: ordersEnded,
 		}
@@ -237,7 +272,7 @@ export const history = async (req, res) => {
 // Получение истории выполненных заказов
 export const stats = async (req, res) => {
 	try{
-		const active = await OrderModel.countDocuments({courier: req.userId, status: 'pending'});
+		const active = await OrderModel.countDocuments({courier: req.userId, status: 'delivering'});
 		const ended = await OrderModel.countDocuments({courier: req.userId, status: 'ended'});
 		res.json({active, ended});
 	} 

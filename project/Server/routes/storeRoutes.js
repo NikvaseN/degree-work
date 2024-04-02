@@ -8,9 +8,9 @@ import checkAuth from '../utils/checkAuth.js';
 import checkAuthor from '../utils/checkAuthor.js';
 import cheackAuthorNonAuth from '../utils/cheackAuthorNonAuth.js';
 import handleValidationErrors from '../utils/handleValidationErrors.js';
-import checkModerator from '../utils/checkModerator.js';
 import express from 'express';
 import rateLimit from 'express-rate-limit'
+import {checkModerator} from '../utils/checkRole.js';
 
 const app = express();
 
@@ -25,6 +25,7 @@ app.post('/auth/login', limiter, loginValidation, handleValidationErrors, UserCo
 app.post('/auth/register',  limiter, registerValidation, handleValidationErrors, UserController.register);
 app.get('/auth/me', checkAuth, UserController.getMe);
 app.patch('/profile', checkAuth, accountUpdateValidation, handleValidationErrors, UserController.update)
+app.post('/profile/birthday', checkAuth, UserController.birthday)
 app.post('/profile/delete', checkAuth, UserController.remove)
 
 // Заказы: администратор

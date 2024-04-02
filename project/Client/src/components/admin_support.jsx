@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
 import './admin.css'
-import './courier_support.css'
+import './staff_support.css'
 import { io } from 'socket.io-client';
 import imgSend from '../img/icons/send.png'
 import arrow from '../img/icons/page-next.png'
@@ -11,6 +11,8 @@ import phone from '../img/icons/phone.png'
 import birthday from '../img/icons/birthday.png'
 import work from '../img/icons/work.png'
 import { formatDate, escapeHtml} from "./functions.jsx"
+import { ruRole } from '../config/roles.js';
+import { Toast } from './swal.js';
 
 export default function Admin_Support ({appeales, user, rolled, mobile, reloadComponent}) {
 	const [socket, setSocket] = useState(false);
@@ -98,6 +100,10 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 
 	const startChat = (chatId) =>{
 		if(chatUserId && chatUserId === chatId){
+			Toast.fire({
+				icon: "error",
+				title: "Обращение уже открыто."
+			});
 			return;
 		}
 
@@ -116,7 +122,7 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 			}, 500);
 		}
 		else{
-			socketF = io(process.env.REACT_APP_API_HOST)
+			socketF = io(import.meta.env.VITE_API_HOST)
 			
 			socketF.on('appeal_read', (chat) => {
 				setMsgs(chat.messages)
@@ -168,17 +174,15 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 				try{
 					setChatActive(false)
 					socket.emit('appeal_cancel', chatUserId, user);
-					Swal.fire(
-						'Успешно!',
-						'Обращение отменено',
-						'success'
-					)
+					Toast.fire({
+						icon: "success",
+						title: "Обращение отменено."
+					});
 				} catch {
-					Swal.fire(
-						'Ошибка!',
-						'Что-то пошло не так',
-						'error'
-					)
+					Toast.fire({
+						icon: "error",
+						title: "Что-то пошло не так."
+					});
 				}
 			}
 		}
@@ -190,14 +194,14 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 			return <img className='system' src={system} alt=""/>
 		}
 		if(obj.user && obj.user.imageUrl) {
-			return <img src={`${process.env.REACT_APP_IMG_URL}${obj.user.imageUrl}`} alt=""/>
+			return <img src={`${import.meta.env.VITE_IMG_URL}${obj.user.imageUrl}`} alt=""/>
 		}
 		return <img src={default_profile} alt=""/>
 	}
 	const viewUser = (obj) =>{
-		const role = obj.user.role === 'courier' ? 'Курьер' : obj.user.role === 'admin' ? 'Администратор' : 'Пользователь'
+		const role = ruRole(obj.user.role)
 		const user = obj.user
-		const imageUrl = `${process.env.REACT_APP_IMG_URL}${user.imageUrl}`
+		const imageUrl = `${import.meta.env.VITE_IMG_URL}${user.imageUrl}`
 		Swal.fire({
 			title: role,
  			html: `
@@ -210,7 +214,6 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 				 <p>Имя: <span>${escapeHtml(user.fullName)}</span></p>
 				 <p>Фамилия: <span>${escapeHtml(user.surname)}</span></p>
 				 <p>Отчество: <span>${escapeHtml(user.patronymic)}</span></p>
-				 <p>Баланс: <span>${escapeHtml(user.balance)}</span></p>
 			 </div>
 			 <br />
 			 <div className="user-info-block" style='display: flex; align-items: center; justify-content: center '>
@@ -229,7 +232,7 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 			`
 		})
 	}
-	console.log(appeales)
+	console.log(typers)
 	return (
 		<>
 			<div className="container admin-container">
@@ -239,9 +242,9 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 						<h3>Обращения</h3>
 						{appeales && appeales.map((obj) => (
 							<li key={obj.socketId} onClick={() => startChat(obj.user._id)} className="appeales-item">
-								<p>{obj.user.fullName}</p>
-								<p>{obj.user.surname[0]}.</p>
-								<p>{obj.user.patronymic[0]}.</p>
+								<p>{obj.user?.fullName}</p>
+								<p>{obj.user?.surname?.[0]}.</p>
+								<p>{obj.user?.patronymic?.[0]}.</p>
 								<div className="appeales-item-send">
 									<img src={arrow} alt="" width={15} height={15}/>
 								</div>
@@ -258,10 +261,9 @@ export default function Admin_Support ({appeales, user, rolled, mobile, reloadCo
 					</ul>
 					<div className="chat-block">
 						<div className="chat__header">
-							{typers?.length === 1 &&
+							{typers?.length === 1 && typers?.[0].user._id !== user._id &&
 								<p className='chat-read__typing'>
-									{console.log(typers)}
-									{typers[0].username} печатает<span>...</span>
+									{typers?.[0].username} печатает<span>...</span>
 								</p>
 							}
 							<h2>Чат</h2>

@@ -1,21 +1,21 @@
-import {courierCreateValidation, accountUpdateValidation} from '../validations.js';
+import {staffCreateValidation, accountUpdateValidation} from '../validations.js';
 import checkAuth from '../utils/checkAuth.js';
-import checkCourier from '../utils/checkCourier.js';
 import handleValidationErrors from '../utils/handleValidationErrors.js';
-import checkModerator from '../utils/checkModerator.js';
 import express from 'express';
 import * as CourierController from '../controlers/CourierController.js';
+import {checkCourier, checkModerator, checkStaff} from '../utils/checkRole.js';
+
 const app = express();
 
 // Курьеры: администратор
 app.get('/couriers/count', checkAuth, checkModerator, CourierController.getAllCount)
-app.post('/couriers', checkAuth, checkModerator, courierCreateValidation, handleValidationErrors, CourierController.create)
+app.post('/couriers', checkAuth, checkModerator, staffCreateValidation, handleValidationErrors, CourierController.create)
 
 // Статистика курьера
 app.get('/courier/stats', checkAuth, checkCourier, CourierController.stats)
 
 // Обновление фото профиля
-app.patch('/courier/avatar', checkAuth, checkCourier, CourierController.avatar)
+app.patch('/courier/avatar', checkAuth, checkStaff, CourierController.avatar)
 
 // История заказов
 app.get('/courier/history', checkAuth, checkCourier, CourierController.history)

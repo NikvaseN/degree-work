@@ -2,7 +2,7 @@ import { useContext, useEffect} from 'react'
 import '../components/admin.css'
 import '../components/courier.css'
 import AuthBlock from './authBlock.jsx'
-import { Context } from '../context.js'
+import { Context } from '../Context.jsx'
 import { useNavigate } from 'react-router-dom'
 
 export default function LogInStaff() {
@@ -11,6 +11,7 @@ export default function LogInStaff() {
 	const routes = {
 		'courier': '/courier',
 		'admin': '/admin',
+		'confectioner': '/confectioner',
 	}
 
 	useEffect(() => {

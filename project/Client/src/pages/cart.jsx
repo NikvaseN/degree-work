@@ -2,19 +2,21 @@ import Header from '../components/header.jsx';
 import '../components/normalize.css'
 import '../components/cart.css'
 import axios from '../axios.js';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {useNavigate, Link} from 'react-router-dom';
 import close from '../img/icons/close.png'
 import imgWarning from '../img/icons/warning.png';
 import io from 'socket.io-client';
-import {Context} from '../context.js';
+import {Context} from '../Context.jsx';
 import sad from '../img/icons/sad-anxious.gif';
 import crypto from 'crypto-js'
-import swal from 'sweetalert2';
+import Swal from 'sweetalert2';
+import Map from '../components/getCoords/GetCoords.jsx'
+import InputMask from 'react-input-mask';
 
 export default function Cart() {
 	const navigate = useNavigate ()
-	const {setQuantityCart} = useContext(Context);
+	const {user, isLoad, setQuantityCart} = useContext(Context);
 
 	let cartEmpty = true
 	let cartItems
@@ -136,21 +138,15 @@ export default function Cart() {
 		}
 		return true
 	}
-	const [user, setUser] = React.useState()
-	const [isLoad, setIsLoad] = React.useState(false)
+
+	const start = async() =>{
+		document.title = "Корзина"
+	}
 
 	React.useEffect(() =>{
-		const start = async() =>{
-			document.title = "Корзина"
-			await axios.get('/auth/me').then(res =>{
-				setUser(res.data)
-			}).catch(() => 
-				setIsLoad(true)
-			)
-			
-		}
 		start()
 	}, [])
+
 	const [username, setUsername] = React.useState ()
 	const [city, setCity] = React.useState ('Иркутск')
 	const [phone, setPhone] = React.useState ('')
@@ -162,7 +158,6 @@ export default function Cart() {
 	
 	const sendOrder = async () =>{
 		let products = cartItems
-		let fields;
 		let coordinates;
 		// Объект с адресом (country, locality: город, province: область, street, house)
 		let Address = {}
@@ -176,7 +171,7 @@ export default function Cart() {
 		if(methodDelivery === 'delivery'){
 			if (city && street && house && apartment && username && phone){
 				const address = `${city}, ${street}, ${house}`
-				await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${process.env.REACT_APP_MAP_API}&format=json&geocode=${address}`)
+				await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${import.meta.env.VITE_MAP_API}&format=json&geocode=${address}`)
 				.then(response => response.json())
 				.then(data => {
 				// Получение координат из ответа
@@ -194,44 +189,70 @@ export default function Cart() {
 				});
 			}
 			else{
-				swal.fire("Заполните все поля!", '', "error");
+				Swal.fire("Ошибка!", 'Заполните все поля!', "error");
 				return;
 			}
-		}
-		if(user){
-			fields = {
-				username, phone, city: Address.locality, street: Address.street, house: Address.house, apartment, coordinates, methodDelivery, fullPrice, products, user
+			if(!Address.locality || !Address.street || !Address.house){
+				Swal.fire("Ошибка!", 'Адрес не найден', "error");
+				return
 			}
 		}
-		else{
-			fields = {
-				username, phone, city: Address.locality, street: Address.street, house: Address.house, apartment, coordinates, methodDelivery, fullPrice, products, nonAuthUser
-			}
+		const fields = {
+			username,
+			phone,
+			city: Address.locality,
+			street: Address.street,
+			house: Address.house,
+			apartment,
+			coordinates,
+			methodDelivery,
+			fullPrice,
+			products
+		};
+
+		if (user) {
+			fields.user = user;
+		} else {
+			fields.nonAuthUser = nonAuthUser;
 		}
 		
 		if (username && phone){
-			const socket = io(process.env.REACT_APP_API_HOST)
-			await axios.post('/orders', fields).then((res) =>{
-			
-				socket.emit('order', 'add', res.data)
-				window.localStorage.removeItem('cart')
-				// if (!user) {
-				// 	let history = JSON.parse(window.localStorage.getItem('history'))
-				// 	if(history == null){
-				// 		window.localStorage.setItem('history', JSON.stringify([res.data]))
-				// 	}
-				// 	else{
-				// 		history.push(res.data)
-				// 		window.localStorage.setItem('history', JSON.stringify(history))
-				// 	}
-				// }
-				setQuantityCart(0)
-				navigate('/history')
-			}
-			)
+			const socket = io(import.meta.env.VITE_API_HOST)
+			await axios.post('/orders', fields)
+				.then((res) =>{
+					socket.emit('order', 'add', res.data)
+					window.localStorage.removeItem('cart')
+					// if (!user) {
+					// 	let history = JSON.parse(window.localStorage.getItem('history'))
+					// 	if(history == null){
+					// 		window.localStorage.setItem('history', JSON.stringify([res.data]))
+					// 	}
+					// 	else{
+					// 		history.push(res.data)
+					// 		window.localStorage.setItem('history', JSON.stringify(history))
+					// 	}
+					// }
+					setQuantityCart(0)
+					navigate('/history')
+				})
+				.catch(err =>{
+					let errs = err.response.data
+					let str = '';
+					if (errs.length >= 1) {
+						errs.forEach((obj) => str += '- ' +  obj.msg + '<br><br>')
+					}
+					else{
+						str = err.response.data.msg
+					}
+					Swal.fire(
+						'Ошибка!',
+						str,
+						'error'
+					)
+				})
 		}
 		else{
-			swal.fire("Заполните все поля!", '', "error");
+			Swal.fire("Заполните все поля!", '', "error");
 		}
 		
 	}
@@ -260,21 +281,18 @@ export default function Cart() {
 			setUsername(data.username)
 		}
 	}
-	//
-	const [easterNum, setEasterNum] = React.useState(1)
-	const easter = () =>{
-		setEasterNum(easterNum + 1)
-		if(easterNum > 9){
-			navigate("/gif")
-		}
-	}
-	//
+	
+	const [coords, setCoords] = useState()
+	React.useEffect(()=>{
+		// Здесь можно сделать логику отправки координат на обратное геокодирование
+	}, [coords])
+
 	let main = []
 	const setMain = () =>{
 		main.push(
 			!cartEmpty ? (
 				<>
-				<p style={{fontSize : 36}} onClick={easter}>Ваш заказ</p>
+				<p style={{fontSize : 36}}>Ваш заказ</p>
 				<div className="hr"></div>
 				{(isLoad && !user) && 
 				<div className="warning-bloack">
@@ -285,6 +303,7 @@ export default function Cart() {
 					<ul>
 						<li>Сохранить историю заказов на аккаунт</li>
 						<li>Получение различных бонусов</li>
+						<li>Предлагать новые рецепты</li>
 					</ul>
 				</div>
 				}
@@ -293,10 +312,10 @@ export default function Cart() {
 					checkActiveItem(index) && obj.product &&(
 					<div key={obj.product._id} className="cart-item">
 						<div className='cart-item__img-block' style={{width: 360}}>
-							<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="Изображение товара" width={360} height={260}/>
+							<img src={`${import.meta.env.VITE_IMG_URL}${obj.product.imageUrl}`} alt="Изображение товара" width={360} height={260}/>
 						</div>
 						<div className="cart-item-text">
-							<h2 style={{fontSize : 30, marginTop:15}}>{obj.product.name}</h2>
+							<h2 style={{fontSize : 30, marginTop:15, textAlign: 'left'}}>{obj.product.name}</h2>
 							<h3 style={{marginBottom : 60, marginTop: 45}}>Состав: <span>{obj.product.composition}</span> </h3>
 							<div className="price-block">
 								<div className="quantity-items pag-cart">
@@ -336,31 +355,33 @@ export default function Cart() {
 					}
 					
 					<form className='cart-form'>
-						<label for='name-input' style={{fontSize : 28, marginBottom: 50, textAlign: 'center'}} className='input-order'>Введите имя</label>
+						<label htmlFor='name-input' style={{fontSize : 28, marginBottom: 50, textAlign: 'center'}} className='input-order'>Введите имя</label>
 						<input type="text" id='name-input' className='cart-input' defaultValue={defaultName} onChange ={(e) => setUsername(e.target.value)}/>
 						
-						<label for='phone-input' className='input-order'>Номер телефона</label>
+						<label htmlFor='phone-input' className='input-order'>Номер телефона</label>
 						{validationPhoneFailed &&(
 							<p className='validationEror'>Введите номер телефона</p>
 						)}
-						<input type="text" id='phone-input' className='cart-input' defaultValue={defaultPhone} onChange ={(e) => setPhone(e.target.value)}/>
-
+						<InputMask mask="8(999) 999-99-99" class="cart-input" type="text" id="phone-input" onChange ={(e) => setPhone(e.target.value.replace(/\D/g, ""))}/>
 						<div className="address-block">
 							<div className="address-block-item">
-								<label for='street-input' className='input-order'>Улица</label>
+								<label htmlFor='street-input' className='input-order'>Улица</label>
 								<input type="text" id='street-input' className='cart-input' onChange ={(e) => setStreet(e.target.value)}/>
 							</div>
 							<div className="address-block-item">
-								<label for='house-input' className='input-order'>Дом</label>
+								<label htmlFor='house-input' className='input-order'>Дом</label>
 								<input type="text" id='house-input' className='cart-input' onChange ={(e) => setHouse(e.target.value)}/>
 							</div>
 							<div className="address-block-item">
-								<label for='apartment-input' className='input-order'>Кваритра</label>
+								<label htmlFor='apartment-input' className='input-order'>Кваритра</label>
 								<input type="text" id='apartment-input' className='cart-input' onChange ={(e) => setApartment(e.target.value)}/>
 							</div>
 						</div>
-
 					</form>
+					{/* <div className='cart-map-block'>
+						<Map setCoords={setCoords} width={'100%'} height={'500px'}/>
+					</div> */}
+					
 					<button className='btn-add-cart' onClick={() => sendOrder()}>Заказать</button>
 				</>
 				)}
@@ -384,7 +405,7 @@ export default function Cart() {
 						{validationPhoneFailed &&(
 							<p className='validationEror'>Введите номер телефона</p>
 						)}
-						<input type="text" id='phone-input' className='cart-input' defaultValue={defaultPhone} onChange ={(e) => setPhone(e.target.value)}/>
+						<InputMask mask="8(999) 999-99-99" class="cart-input" type="text" id="phone-input" onChange ={(e) => setPhone(e.target.value.replace(/\D/g, ""))}/>
 					</form>
 					<p style={{fontSize : 28, marginBottom: 50}}>Самовывоз</p>		
 					<p style={{fontSize : 22, marginBottom: 50}}>Вы можете подтвердить заказ и приехать к нам в магазин для оплаты и получения заказа</p>		
@@ -399,7 +420,7 @@ export default function Cart() {
 						Сб Выходной<br />
 						Вс Выходной <br />
 	</p>
-					<iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A26813f20f39c4e90d9bb358c11190faea4af213cb57baa04cd8c56df455d132e&amp;source=constructor" width="950" height="400" frameborder="0"></iframe>
+					<iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A26813f20f39c4e90d9bb358c11190faea4af213cb57baa04cd8c56df455d132e&amp;source=constructor" width="950" height="400" frameBorder="0"></iframe>
 					<button className='btn-add-cart' style={{marginTop: 50}} onClick={() => sendOrder()}>Заказать</button>		
 					</>
 				)

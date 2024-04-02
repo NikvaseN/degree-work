@@ -1,18 +1,23 @@
-import React, {useContext} from 'react';
+import React, {useContext, useRef} from 'react';
 import axios from '../axios.js';
 import close from '../img/icons/close.png'
-import {useNavigate} from "react-router-dom";
 import './header.css'
 import './normalize.css'
 import cart from '../img/icons/cart.png'
 import settings from '../img/icons/settings.png'
 import {Link} from "react-router-dom";
-import {Context} from '../context.js';
+import {Context} from '../Context.jsx';
 import Swal from 'sweetalert2';
+import { checkStaffRole } from '../config/roles.js';
+import InputMask from 'react-input-mask';
 
 export default function Header() {
 
 	const {quantityCart, setQuantityCart, user, isLoad} = useContext(Context);
+
+	const phoneRef = useRef()
+	const fullNameRef = useRef()
+	const passwordRef = useRef()
 
 	const setUpCart = async () =>{
 		if(JSON.parse(localStorage.getItem ('cart')) !== null){
@@ -48,7 +53,7 @@ export default function Header() {
 			if(res.isConfirmed){
 				try{
 					window.localStorage.removeItem('token')
-					navigate(0)
+					window.location.reload()
 					Swal.fire(
 						'Успешно!',
 						'Вы успешно вышли',
@@ -74,13 +79,11 @@ export default function Header() {
 		setErrors([])
 		closeRegister()
 		setLogin(true)
-		clearUserFields()
 		document.body.style.overflowY = "hidden";
 	}
 	const closeLogin = async () =>{
 		setErrors([])
 		setLogin(false);
-		clearUserFields()
 		document.body.style.overflowY = "visible";
 		
 	}
@@ -88,13 +91,11 @@ export default function Header() {
 		setErrors([])
 		closeLogin()
 		setRegister(true)
-		clearUserFields()
 		document.body.style.overflowY = "hidden";
 	}
 	const closeRegister = async () =>{
 		setErrors([])
 		setRegister(false);
-		clearUserFields()
 		document.body.style.overflowY = "visible";
 		
 	}
@@ -102,23 +103,14 @@ export default function Header() {
 		setRegister(false);
 		setLogin(false);
 		setErrors([])
-		clearUserFields()
 		document.body.style.overflowY = "visible";
 	}
-	const clearUserFields = () => {
-		setPhone('')
-		setPassword('')
-		setfullName('')
-	}
+	
 
 	const [authAttempt, setAuthAttempt] = React.useState(0)
 	const [incorrectLogin, setIncorrectLogin] = React.useState(false)
 	const [incorrectRegister, setIncorrectRegister] = React.useState(false)
-	const [phone, setPhone] = React.useState('')
-	const [password, setPassword] = React.useState('')
-	const [fullName, setfullName] = React.useState('')
 	const [errors, setErrors] = React.useState([])
-	const navigate = useNavigate()
 
 	const onLogin = async () => {
 		try {
@@ -127,13 +119,16 @@ export default function Header() {
 				return false
 			}
 			const fields = {
-				phone, password
+				phone: phoneRef.current.value.replace(/\D/g, ""),
+				password: passwordRef.current.value
 			}
 			await axios.post('/auth/login', fields).then(res =>{
 				window.localStorage.setItem('token', res.data.token)
-				navigate(0)
-			}).catch(err => setErrors(err.response.data)).then(setIncorrectRegister(true))
-			
+				window.location.reload()
+			}).catch(err => {
+				setErrors(err.response.data)
+				setIncorrectRegister(true)
+			})
 		} catch (err) {
 			console.warn(err);
 			setAuthAttempt((attempt) => attempt + 1)
@@ -144,12 +139,17 @@ export default function Header() {
 	const onRegister = async () => {
 		try {
 			const fields = {
-				phone, password, fullName
+				phone: phoneRef.current.value.replace(/\D/g, ""),
+				password: passwordRef.current.value, 
+				fullName: fullNameRef.current.value
 			}
 			await axios.post('/auth/register', fields).then(res =>{
 				window.localStorage.setItem('token', res.data.token)
-				navigate(0)
-			}).catch(err => setErrors(err.response.data)).then(setIncorrectRegister(true))
+				window.location.reload()
+			}).catch(err => {
+				setErrors(err.response.data)
+				setIncorrectRegister(true)
+			})
 			
 		} catch (err) {
 			setIncorrectRegister(true)
@@ -157,7 +157,6 @@ export default function Header() {
 		}
 		
 	}
-	console.log('errors', errors)
 	const submitInput = (e) =>{
 		e.preventDefault();
 		if (login) {
@@ -168,8 +167,9 @@ export default function Header() {
 		}
         return false;
 	}
+
 	return (
-	<container>
+	<div className='container'>
 		{true &&(
 		// {auth === 1 || auth === 2 &&(
 			<>
@@ -188,7 +188,7 @@ export default function Header() {
 				<button onClick={closePopUp}><Link to='/history'><h3 className='header-links'>Заказы</h3></Link></button>
 				<button onClick={closePopUp}><Link to='/profile'><h3 className='header-links'>{user.fullName}</h3></Link></button>
 				<button onClick={closePopUp}><h3 className='header-links' onClick={onClickLogout}>Выйти</h3></button>
-				{(user.role === 'moderator' || user.role === 'admin' || user.role === 'courier') &&(
+				{(checkStaffRole(user.role)) &&(
 					<>
 						<Link to='/staff' className='settings-link settings'><img src={settings} alt="" width='40px' height='40px'/></Link>
 					</>
@@ -212,9 +212,7 @@ export default function Header() {
 		</header>
 		{login&&(
 			<>
-			<div className="popup" onClick={closeLogin}>
-				
-			</div>
+			<div className="popup" onClick={closeLogin}/>
 			<div className="popup-item">
 				<button className='popup-close' onClick={closeLogin}><img src={close} alt="" width='28' height='28'/></button>
 				<p className='header-popup__title'>Авторизация</p>
@@ -229,16 +227,16 @@ export default function Header() {
 					(
 						<p className='incorrect'>{errors.msg}</p>
 					)
-				}
+					}
 				</div>
 				}
 				<form className='cart-form' onSubmit={submitInput}>
-					<label for='phone-input' style={{fontSize : 20, marginBottom: 10, marginTop: 30}}><p>Введите номер телефона</p></label>
-					<input type="phone" id='phone-input' className='header-input' onChange ={(e) => setPhone(e.target.value)}/>
+					<label htmlFor='phone-input' style={{fontSize : 20, marginBottom: 10, marginTop: 30}}><p>Телефон</p></label>
+					<InputMask mask="8(999) 999-99-99" class="header-input" type="text" id='phone-input' placeholder="Введите номер телефона" ref={phoneRef}/>
 				</form>
 				<form className='cart-form' onSubmit={submitInput}>
-					<label for='password-input' style={{fontSize : 20, marginBottom: 10, marginTop: -40}}><p>Введите пароль</p></label>
-					<input type="password" id='password-input' className='header-input' onChange ={(e) => setPassword(e.target.value)}/>
+					<label htmlFor='password-input' style={{fontSize : 20, marginBottom: 10, marginTop: -40}}><p>Пароль</p></label>
+					<input type="password" id='password-input' className='header-input' placeholder="Введите пароль" ref={passwordRef}/>
 				</form>
 				<button className='btn-login'  style={{marginTop: -20}} onClick={onLogin}>Войти</button>	
 				<p className='header-links-black' onClick={registerClick}>Зарегистрироваться</p>
@@ -248,9 +246,7 @@ export default function Header() {
 		}
 		{register&&(
 			<>
-			<div className="popup" onClick={closeRegister}>
-				
-			</div>
+			<div className="popup" onClick={closeRegister}/>
 			<div className="popup-item">
 				<button className='popup-close' onClick={closeRegister}><img src={close} alt="" width='28' height='28'/></button>
 				<p className='header-popup__title'>Регистрация</p>
@@ -262,16 +258,16 @@ export default function Header() {
 				</div>
 				}
 				<form className='cart-form' onSubmit={submitInput}>
-					<label for='name-input' style={{fontSize : 20, marginBottom: 10, marginTop: 0}}><p>Введите имя</p></label>
-					<input type="text" id='name-input' className='header-input' onChange ={(e) => setfullName(e.target.value)}/>
+					<label htmlFor='name-input' style={{fontSize : 20, marginBottom: 10, marginTop: 0}}><p>Имя</p></label>
+					<input type="text" id='name-input' className='header-input' placeholder='Введитие имя' ref={fullNameRef}/>
 				</form>
 				<form className='cart-form' onSubmit={submitInput}>
-					<label for='phone-input' style={{fontSize : 20, marginBottom: 10, marginTop: -50}}><p>Введите номер телефона</p></label>
-					<input type="phone" id='phone-input' className='header-input' onChange ={(e) => setPhone(e.target.value)}/>
+					<label htmlFor='phone-input' style={{fontSize : 20, marginBottom: 10, marginTop: -50}}><p>Телефон</p></label>
+					<InputMask mask="8(999) 999-99-99" class="header-input" type="text" id='phone-input' placeholder="Введите номер телефона" ref={phoneRef}/>
 				</form>
 				<form className='cart-form' onSubmit={submitInput}>
-					<label for='password-input' style={{fontSize : 20, marginBottom: 10, marginTop: -50}}><p>Введите пароль</p></label>
-					<input type="password" id='password-input' className='header-input' onChange ={(e) => setPassword(e.target.value)}/>
+					<label htmlFor='password-input' style={{fontSize : 20, marginBottom: 10, marginTop: -50}}><p>Пароль</p></label>
+					<input type="password" id='password-input' className='header-input' placeholder='Введите пароль' ref={passwordRef}/>
 				</form>
 				<button className='btn-login register' onClick={onRegister}>Зарегистрироваться</button>
 				<p className='header-links-black' onClick={loginClick}>Войти</p>
@@ -282,7 +278,7 @@ export default function Header() {
 		</>
 		)}
 		
-	</container>
+	</div>
 
 	);
   };

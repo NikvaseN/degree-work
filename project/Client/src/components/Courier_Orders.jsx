@@ -40,7 +40,7 @@ export default function Courier_Orders ({rolled, mobile, reloadComponent}) {
 		document.title = 'Заказы'
 
 		// Сокет на обновление заказов
-		const socket = io(process.env.REACT_APP_API_HOST)
+		const socket = io(import.meta.env.VITE_API_HOST)
 		socket.on('change-status', (prevStatus, status) =>{	
 			setTimeout(() => setUp(), 1000);
 		})
@@ -123,7 +123,7 @@ export default function Courier_Orders ({rolled, mobile, reloadComponent}) {
 	return (
 		isLoad  &&
 		<>
-			<YMaps id='map' query={{ apikey: process.env.REACT_APP_MAP_API}}>
+			<YMaps id='map' query={{ apikey: import.meta.env.VITE_MAP_API }}>
 					<MapOrders 
 						className='courier-orders-map-block' 
 						key={refresh} 
@@ -179,7 +179,7 @@ export default function Courier_Orders ({rolled, mobile, reloadComponent}) {
 							{target && target.products.map((obj) =>(
 								obj.product &&
 								<div key={obj.product._id} className='courier-orders-products' style={{justifyContent: 'space-between'}}>
-									<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="" width={70} height={50}/>
+									<img src={`${import.meta.env.VITE_IMG_URL}${obj.product.imageUrl}`} alt="" width={70} height={50}/>
 									<h3>{obj.product.name}</h3>
 									<h3>{obj.value} шт.</h3>
 								</div>

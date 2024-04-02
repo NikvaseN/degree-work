@@ -3,10 +3,10 @@ import './header.css'
 import './normalize.css'
 export default function Footer() {
 	return (
-	<container>
+	<div className='container'>
 		<footer>
-			<h3 href="" className='footer-link'>© 2022 Candy Store</h3>
+			<h3 href="" className='footer-link'>© 2024 Candy Store</h3>
 		</footer>
-	</container>
+	</div>
 	);
-  };
+};

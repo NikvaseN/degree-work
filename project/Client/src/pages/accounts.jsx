@@ -4,9 +4,8 @@ import {downloadTable} from '../components/download.jsx'
 import '../components/item_change.css'
 import '../components/table.css'
 import axios from '../axios.js';
-import React from 'react';
+import React, { useState } from 'react';
 import { io } from 'socket.io-client';
-import {useNavigate } from 'react-router-dom';
 import cancel from '../img/icons/cancel.png'
 import pen from '../img/icons/pen.png'
 import imgOnline from '../img/icons/green-circle.png'
@@ -14,14 +13,15 @@ import imgOffline from '../img/icons/red-circle.png'
 import plus from '../img/icons/plus_dark.png'
 import swal from 'sweetalert2';
 import imgRefresh from '../img/icons/refresh.png'
+import load from "../img/icons/load.gif"
+import { checkStaffExtAdmin } from '../config/roles.js'
+import { Toast } from '../components/swal.js'
 
 export default function Accounts({setTargetComponent, user, reloadComponent}) {
-	const navigate = useNavigate ()
-
 	const [findedItems, setFindedItems] = React.useState([])
 	const [name, setName] = React.useState('')
 	const [online, setOnline] = React.useState()
-
+	const [isLoad, setIsLoad] = useState(false)
 	
 	const search = async (current) =>{
 		let fields = {
@@ -45,6 +45,8 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 			setFindedItems([...res.data])
 		})
 
+		setIsLoad(true)
+
 	}
 	
 	React.useEffect(() =>{
@@ -60,7 +62,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 				`<p style='color: black'>Имя:  ${escapeHtml(obj.fullName)}</p><br>` +
 				`<p style='color: black'>Телефон:  ${escapeHtml(obj.phone)}</p><br>` +
 				`<p style='color: black'>Заказов:  ${escapeHtml(obj.orderCount)}</p><br>` +
-				`<p style='color: black'>Роль:  ${escapeHtml(obj.role === 'courier' ? 'Курьер': obj.role === 'user' ? 'Пользователь' : obj.role === 'admin' ? 'Администратор' : obj.role)}</p><br>` +
+				`<p style='color: black'>Роль:  ${escapeHtml(ruRole(obj.role))}</p><br>` +
 				`<p style='color: black'>Регистрация:  ${formatDate(obj.createdAt, 'D.M.Y')}</p><br>`,
 			icon: 'warning',
 			showCancelButton: true,
@@ -88,11 +90,10 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 				if(formValues) {
 					if(formValues === obj.phone) {
 						await axios.delete(`/accounts/${obj._id}`).then(() =>{
-							swal.fire(
-								'Успешно!',
-								'Аккаунт успешно удален.',
-								'success'
-							)
+							Toast.fire({
+								icon: "success",
+								title: "Аккаунт успешно удален."
+							});
 							reloadComponent()
 						}
 						).catch((err) =>{
@@ -128,7 +129,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 	const [socket, setSocket] = React.useState()
 
 	React.useEffect(()=>{
-		const socket = io(process.env.REACT_APP_API_HOST)
+		const socket = io(import.meta.env.VITE_API_HOST)
 
 		socket.on('couriers-count', (count) =>{
 			setOnline(count)
@@ -228,11 +229,10 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 					//* Отправка изменений на сервер
 					if (res.isConfirmed) {
 						await axios.patch(`/accounts/${obj._id}`, result).then(() =>{
-							swal.fire(
-								'Успешно!',
-								'Аккаунт успешно обновлен.',
-								'success'
-							)
+							Toast.fire({
+								icon: "success",
+								title: "Аккаунт успешно обновлен."
+							});
 							reloadComponent()
 						}
 						).catch((err) =>{
@@ -256,7 +256,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 		}
 	}
 	const startChanging = async (obj) =>{
-		if(obj.role === 'courier'){
+		if(checkStaffExtAdmin(obj.role)){
 			// Форма
 			const { value: formValues } = await swal.fire({
 				title: 'Редактировать акканут',
@@ -338,24 +338,35 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 			btns[i].classList.remove("focus");
 		}
 		e.target.classList.add("focus");
+		setIsLoad(false)
 		search(current)
 	}
 
+	const ruRole = (obj) =>{
+		const roles = {
+			'courier': 'Курьер',
+			'user': 'Пользователь',
+			'admin': 'Администратор',
+			'confectioner': 'Кондитер',
+		}
+		return roles[obj]
+	}
+	
 	let main = []
 	const setMain = () =>{
 		main.push(
 
 			(findedItems).map((obj, index) => (
-				target === 'courier' ? (
+				(checkStaffExtAdmin(target)) ? (
 					<tr key={obj._id}>
-						<td className='table-username'>{obj.role === 'courier' ? (`${obj.surname} ${obj.fullName[0]}. ${obj.patronymic[0]}.`) : obj.fullName}</td>
+						<td className='table-username'>{checkStaffExtAdmin(obj.role) ? (`${obj.surname} ${obj.fullName[0]}. ${obj.patronymic[0]}.`) : obj.fullName}</td>
 						<td className='table-phone'>{obj.phone}</td>
 						<td className='table-amount-orders'>{obj.orderCount}</td>
-						<td className='table-birthday'>{obj.role === 'courier' ? formatDate(obj.birthday, 'D.M.Y') : '-'}</td>
-						<td>{obj.role === 'courier' ? `г. ${obj.city} ул. ${obj.street} д. ${obj.house} кв. ${obj.apartment}` : '-'}</td>
+						<td className='table-birthday'>{checkStaffExtAdmin(obj.role) ? formatDate(obj.birthday, 'D.M.Y') : '-'}</td>
+						<td>{checkStaffExtAdmin(obj.role) ? `г. ${obj.city} ул. ${obj.street} д. ${obj.house} кв. ${obj.apartment}` : '-'}</td>
 						<td className='table-created'>{formatDate(obj.createdAt, 'D.M.Y')}</td>
-						<td className='table-status'>{cheackOnline(obj._id)}</td>
-						<td className='table-balance'>{obj.role === 'courier' ? obj.balance : '-'}</td>
+						{obj.role === 'courier' && <td className='table-status'>{cheackOnline(obj._id)}</td>}
+						{/* <td className='table-balance'>{checkStaffExtAdmin(obj.role) ? obj.balance : '-'}</td> */}
 						<td className='table-edit'>
 							<div className="table-edit-block">
 								<img onClick={() => startChanging(obj)} className='change-account' src={pen} alt=""/>
@@ -370,7 +381,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 							<td>{obj.fullName}</td>
 							<td>{obj.phone}</td>
 							<td>{obj.orderCount}</td>
-							<td>{obj.role === 'courier' ? 'Курьер': obj.role === 'user' ? 'Пользователь' : obj.role === 'admin' ? 'Администратор' : obj.role}</td>
+							<td>{ruRole(obj.role)}</td>
 							<td>{formatDate(obj.createdAt, 'D.M.Y')}</td>
 							<td>
 								<div className="table-edit-block">
@@ -411,6 +422,7 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 					<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('all', e)}>Все</div>
 					<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('user', e)}>Пользователи</div>
 					<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('courier', e)}>Курьеры</div>
+					<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('confectioner', e)}>Кондитеры</div>
 				</div>
 				<div className="search-items">
 					<input className='search-items__input' type="text" onKeyDown={handleKeyDown} onChange ={(e) => setName(e.target.value)} placeholder='Введите фио или телефон'/>
@@ -421,16 +433,16 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 					<table cellPadding="0" cellSpacing="0" border="0">
 					<thead>
 						<tr>
-							{target === 'courier' ?
+							{checkStaffExtAdmin(target) ?
 							<>
-								<th className='table-username'>Имя</th>
+								<th className='table-username'>ФИО</th>
 								<th className='table-phone'>Телефон</th>
 								<th className='table-amount-orders'>Кол-во заказов</th>
 								<th className='table-birthday'>Дата рождения</th>
 								<th>Адрес проживания</th>
 								<th className='table-created'>Присоединился</th>
-								<th className='table-status'>Онлайн</th>
-								<th className='table-balance'>Баланс</th>
+								{target === 'courier' && <th className='table-status'>Онлайн</th>}
+								{/* <th className='table-balance'>Баланс</th> */}
 								<th className='table-edit'>Редактировать</th>
 							</>
 							:
@@ -451,7 +463,12 @@ export default function Accounts({setTargetComponent, user, reloadComponent}) {
 				<div className="tbl-content">
 					<table cellPadding="0" cellSpacing="0" border="0">
 					<tbody>
-						{main}
+						{isLoad ? 
+							main : 
+							<div className='msg-body-block'>
+								<img src={load} alt="load" />
+							</div>
+						}
 					</tbody>
 					</table>
 				</div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import axios from '../axios.js'
 import '../components/admin.css'
 import '../components/courier.css'
@@ -13,40 +13,40 @@ import arrow from '../img/icons/two-rev-arrow.png'
 import { useNavigate, Link} from 'react-router-dom'
 import { io } from 'socket.io-client'
 import Orders from '../components/Courier_Orders.jsx'
-import History from '../components/courier_history.jsx'
-import Profile from '../components/courier_profile.jsx'
-import Support from '../components/courier_support.jsx'
+import History from '../components/staff_history.jsx'
+import Profile from '../components/staff_profile.jsx'
+import Support from '../components/staff_support.jsx'
 import Swal from 'sweetalert2'
+import { Context } from '../Context.jsx'
 
 export default function Courier() {
-	const [isLoad, setIsLoad] = React.useState(false)
-	const [user, setUser] = React.useState()
+	const [pageIsLoad, setPageIsLoad] = React.useState(false)
 	// const [user, setUser] = React.useState({role : 'courier'})
 	const [socket, setSocket] = React.useState()
 	const [activeOrder, setActiveOrder] = React.useState([])
 	const navigate = useNavigate()
+	const {user, isLoad} = useContext(Context);
 
 	const start = async() =>{
 		document.title = "Личный кабинет"
-		await axios.get('/auth/me').then(res =>{
-			setUser(res.data)
-			const socket = io(process.env.REACT_APP_API_HOST)
-			if(res.data.role === 'courier'){
-				socket.emit('join-as-courier', res.data)
+		if(isLoad){
+			if(!user){
+				navigate('/')
+			}
+			const socket = io(import.meta.env.VITE_API_HOST)
+			if(user.role === 'courier'){
+				socket.emit('join-as-courier', user)
 			}
 			setSocket(socket)
-			cheackRolled()
-		}).catch(() =>{
-			setIsLoad(true)
-		})
-
-		await axios.get('/courier/working').then(res =>{
-			setActiveOrder(res.data)
-			setIsLoad(true)
-		}).catch(() => {
-			setIsLoad(true)
-		})
-
+			checkRolled()
+			
+			await axios.get('/courier/working').then(res =>{
+				setActiveOrder(res.data)
+				setPageIsLoad(true)
+			}).catch(() => {
+				setPageIsLoad(true)
+			})
+		}
 	}
 
 	React.useEffect(() =>{
@@ -54,7 +54,7 @@ export default function Courier() {
 		return () =>{
 			socket && socket.close(user)
 		}
-	}, [])
+	}, [isLoad])
 
 	const [targetComp, setTargetComp] = React.useState('orders')
 	const changeTarget = (e, com) =>{
@@ -81,7 +81,7 @@ export default function Courier() {
 			if(res.isConfirmed){
 				try{
 					window.localStorage.removeItem('token')
-					navigate(0)
+					window.location.reload()
 					Swal.fire(
 						'Успешно!',
 						'Вы успешно вышли',
@@ -106,7 +106,7 @@ export default function Courier() {
 			lk_body.classList.add('mobile')
 		}
 		setMobile(mobile)
-	}, [isLoad])
+	}, [pageIsLoad])
 
 	// Вызывает перезагрузку компонента
 	const [refresh, setRefresh] = React.useState(false);
@@ -115,7 +115,7 @@ export default function Courier() {
 	};
 
 	// Свернуть (развернуть) sidebar
-	const cheackRolled = () =>{	
+	const checkRolled = () =>{	
 		if (JSON.parse(window.localStorage.getItem('roll')) === true){
 			setRolled(true)
 		}
@@ -130,7 +130,7 @@ export default function Courier() {
 		}
 	}
 	React.useEffect(()=>{
-		if(isLoad && !mobile){
+		if(pageIsLoad && !mobile){
 			const sidebar = document.getElementById('sidebar')
 			const lk_body = document.getElementById('lk-body')
 			if(rolled){
@@ -144,12 +144,12 @@ export default function Courier() {
 				window.localStorage.setItem('roll', false)
 			}
 		}
-	}, [rolled])
+	}, [rolled, pageIsLoad])
 	/// Свернуть (развернуть) sidebar
 
 	let section = []
 	section.push(
-		isLoad && (
+		pageIsLoad && (
 			targetComp === 'orders' ? (
 					<Orders key={refresh} rolled={rolled} mobile={mobile} reloadComponent={reloadComponent}/>
 			):
@@ -165,7 +165,7 @@ export default function Courier() {
 		)
 	)
 	return(
-		isLoad &&(
+		pageIsLoad &&(
 		(user && (user.role === 'courier' || user.role === 'admin'))? (
 		// Основной блок
 
@@ -176,14 +176,14 @@ export default function Courier() {
 				<div className="sidebar" id="sidebar">
 					<div className="logo-block">
 						{user.imageUrl ? 
-						<img src={`${process.env.REACT_APP_IMG_URL}${user.imageUrl}`}/>:
+						<img src={`${import.meta.env.VITE_IMG_URL}${user.imageUrl}`}/>:
 						<img src={default_profile} className='lk-circle'/>
 						}
 						
 						<h3 className="lk-name">{user.name ? user.name : (user.fullName && user.fullName)}</h3>
 					</div>
 					{/* <div className="lk-hr"></div> */}
-					<div className="sidebar-items-block">
+					<div className="sidebar-items-block" style={{marginTop: 30}}>
 						<div className="sidebar-item focus" onClick={(e) => changeTarget(e, 'orders')}>
 							<img src={home} alt=""/>
 							<p>Главная</p>

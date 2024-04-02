@@ -36,23 +36,23 @@ export default function Admin() {
 			await axios.get('/auth/me').then(res =>{
 				setUser(res.data)
 				setIsLoad(true)
-				cheackRolled()
+				checkRolled()
 			})
 		}
 		catch{
 			setUser(false)
 			setIsLoad(true)
-			cheackRolled()
+			checkRolled()
 		}
 	}
 	const [appeales, setAppeales] = React.useState([])
 
 	React.useEffect(() =>{
 		getUser()
-		const socket = io(process.env.REACT_APP_API_HOST)
+		const socket = io(import.meta.env.VITE_API_HOST)
 
 		socket.on('appeales', (arr, id) => {
-			console.log(appeales)
+			// console.log(appeales)
 			if(!id){
 				setAppeales(arr)
 			}
@@ -111,7 +111,7 @@ export default function Admin() {
 	};
 	
 	// Свернуть (развернуть) sidebar
-	const cheackRolled = () =>{	
+	const checkRolled = () =>{	
 		if (JSON.parse(window.localStorage.getItem('roll')) === true){
 			setRolled(true)
 		}
@@ -157,7 +157,7 @@ export default function Admin() {
 			if(res.isConfirmed){
 				try{
 					window.localStorage.removeItem('token')
-					navigate(0)
+					window.location.reload()
 					Swal.fire(
 						'Успешно!',
 						'Вы успешно вышли',
@@ -178,16 +178,16 @@ export default function Admin() {
 	section.push(
 		isLoad && (
 			target === 'main' ? (
-				<Admin_section_main/>
+				<Admin_section_main key={refresh}/>
 			):
 			target === 'orders' ? (
 				<List_orders key={refresh} reloadComponent={reloadComponent}/>
 			):
 			target === 'products' ? (
-				<Admin_products setTarget={setTarget}/>
+				<Admin_products setTarget={setTarget} key={refresh}/>
 			):
 			target === 'addProducts' ? (
-				<Item_add/>
+				<Item_add key={refresh}/>
 			): 
 			target === 'changeProducts' ? (
 				<Item_change setTarget={setTarget} reloadComponent={reloadComponent} key={refresh}/>
@@ -196,10 +196,10 @@ export default function Admin() {
 				<Accounts setTargetComponent={setTarget} user={user} reloadComponent={reloadComponent} key={refresh}/>
 			):
 			target === 'support' ? (
-				<Support appeales={appeales} setTargetComponent={setTarget} user={user} reloadComponent={reloadComponent}/>
+				<Support appeales={appeales} setTargetComponent={setTarget} user={user} reloadComponent={reloadComponent} key={refresh}/>
 			):
 			target === 'accountsCreate' && (
-				<Admin_account_create/>
+				<Admin_account_create  key={refresh} reloadComponent={reloadComponent}/>
 			)
 		)
 	)
@@ -210,12 +210,12 @@ export default function Admin() {
 					<div className="sidebar" id='sidebar'>
 						<div onClick={() => inputFileRef.current.click()} className="logo-block">
 							{user.imageUrl ? 
-								<img src={`${process.env.REACT_APP_IMG_URL}${user.imageUrl}`} className='lk-circle'/>
+								<img src={`${import.meta.env.VITE_IMG_URL}${user.imageUrl}`} className='lk-circle'/>
 								:
 								<img src={default_profile} className='lk-circle'/>
 							}
 							<input ref={inputFileRef} hidden type="file" id="upload" onChange={handleChangeFule}/>
-							<img className="profile-logo" src={plus} alt="" style={ rolled ? {width: 40, height: 40, marginTop: 120} :  {width: 80, height: 80}}/>
+							<img className="profile-logo _noneborder" src={plus} alt="" style={ rolled ? {width: 40, height: 40, marginTop: 102, marginLeft: 2} :  {width: 80, height: 80, marginLeft: 2.5}}/>
 							<h3 className="lk-name">{user.fullName}</h3>
 						</div>
 						{/* <div className="lk-hr"></div> */}

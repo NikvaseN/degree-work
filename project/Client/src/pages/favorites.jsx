@@ -1,29 +1,26 @@
 import '../components/normalize.css'
 import '../components/favorites.css'
-import React from 'react';
+import React, {useContext} from 'react';
 import axios from '../axios.js';
+import { Context } from '../Context.jsx';
+
 export default function Favorites() {
-	const [user, setUser] = React.useState()
 	const [favorites, setFavorites] = React.useState([])
-	const getUser = async () =>{
+	const {user, setUser, isLoad} = useContext(Context);
 
-		// user
-		await axios.get('/auth/me').then(res =>{
-			setUser(res.data)
-		}).catch()
-
-
+	const getData = async () =>{
 		// data favorites
 		await axios.get('/like').then(res =>{
 			setFavorites(res.data)
 		}).catch()
-
 	}
 
 	React.useEffect(()=>{
-		document.title = "Избранное"
-		getUser ()
-	}, [])
+		if(isLoad){
+			document.title = "Избранное"
+			getData()
+		}
+	}, [isLoad])
 
 	const candies = '6378712c2dc9c0dfd59e467b'
 	const cakes = '637871432dc9c0dfd59e467d'
@@ -64,7 +61,7 @@ export default function Favorites() {
 					filter(obj) && 
 					(
 						<div className="favorotes-item">
-							<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="img" height={200}/>
+							<img src={`${import.meta.env.VITE_IMG_URL}${obj.product.imageUrl}`} alt="img" height={200}/>
 							<div className="favorites-item-text">
 								<p className='favorite-title'>{obj.product.name}</p>
 								<div className="favorite-composition"><p>Состав: {obj.product.composition}</p></div>

@@ -1,15 +1,14 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import axios from "../axios.js";
-import { Navigate, useNavigate } from "react-router-dom";
 import '../components/courier.css'
-import { Context } from "../context.js";
+import { Context } from "../Context.jsx";
+import InputMask from 'react-input-mask';
 
 export default function AuthBlock() {
-	const [phone, setPhone] = React.useState()
-	const [password, setPassword] = React.useState()
 	const [errors, setErrors] = React.useState()
 
-	const navigate = useNavigate()
+	const phoneRef = useRef()
+	const passwordRef = useRef()
 
 	const submitInput = (e) =>{
 		e.preventDefault();
@@ -21,12 +20,13 @@ export default function AuthBlock() {
 	const login = async () => {
 		try {
 			const fields = {
-				phone, password
+				phone: phoneRef.current.value.replace(/\D/g, ""), 
+				password: passwordRef.current.value
 			}
 			await axios.post('/auth/login', fields).then(res =>{
 				window.localStorage.setItem('token', res.data.token)
 				setUser(res.data.token)
-				navigate(0)
+				window.location.reload()
 			}).catch(err => setErrors(err.response.data))
 			
 		} catch (err) {
@@ -34,7 +34,6 @@ export default function AuthBlock() {
 		}
 		
 	}
-	// console.log(errors)
 	return (
 		<div className="auth-block">
 			<div className="popup-item">
@@ -50,12 +49,12 @@ export default function AuthBlock() {
 				</div>
 				}
 				<form className='cart-form' onSubmit={submitInput}>
-					<label for='phone-input' style={{fontSize : 20, marginBottom: 10, marginTop: 30}}><p>Введите номер телефона</p></label>
-					<input type="phone" id='phone-input' className='header-input' onChange ={(e) => setPhone(e.target.value)}/>
+					<label htmlFor='phone-input' style={{fontSize : 20, marginBottom: 10, marginTop: 30}}><p>Телефон</p></label>
+					<InputMask mask="8(999) 999-99-99" class="header-input" type="text" id="phone-input" placeholder="Введите номер телефона" ref={phoneRef}/>
 				</form>
 				<form className='cart-form' onSubmit={submitInput}>
-					<label for='password-input' style={{fontSize : 20, marginBottom: 10, marginTop: -40}}><p>Введите пароль</p></label>
-					<input type="password" id='password-input' className='header-input' onChange ={(e) => setPassword(e.target.value)}/>
+					<label htmlFor='password-input' style={{fontSize : 20, marginBottom: 10, marginTop: -40}}><p>Пароль</p></label>
+					<input type="password" id='password-input' className='header-input' placeholder="Введите пароль" ref={passwordRef}/>
 				</form>
 				<button className='btn-login'  style={{marginTop: -20}} onClick={login}>Войти</button>
 			</div>

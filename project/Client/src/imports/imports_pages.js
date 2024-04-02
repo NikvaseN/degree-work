@@ -9,5 +9,6 @@ export { default as Desserts } from '../pages/desserts.jsx';
 export { default as Favorites } from '../pages/favorites.jsx';
 export { default as Admin } from '../pages/admin.jsx';
 export { default as Courier } from '../pages/courier.jsx';
+export { default as Confectioner } from '../pages/confectioner/confectioner.jsx';
 export { default as LogInStaff } from '../pages/logInStaff.jsx';
 export { default as Profile } from '../pages/profile.jsx';

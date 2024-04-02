@@ -5,6 +5,7 @@ import refresh from '../img/icons/refresh.png'
 import React from 'react';
 import axios from '../axios.js';
 import { io } from 'socket.io-client';
+import '../styles/statuses.css'
 
 export default function Admin_section_main() {
 	const [ordersData, setOrdersData] = React.useState()
@@ -12,7 +13,6 @@ export default function Admin_section_main() {
 	const [socket, setSocket] = React.useState()
 	const [online, setOnline] = React.useState()
 	const setPb = (data) =>{
-
 		const orders = Object.entries(data.ordersData).map(([key, value]) => ({ key, value }))
 		const couriers = Object.entries(data.couriersData).map(([key, value]) => ({ key, value }))
 		orders.forEach((obj) => {
@@ -36,6 +36,7 @@ export default function Admin_section_main() {
 			setPb(res.data)
 		})
 	}
+
 	const onlinePbBar = (online, couriersData) =>{
 		if(couriersData){
 			const elOnline = document.getElementById(`online`)
@@ -48,10 +49,11 @@ export default function Admin_section_main() {
 			
 		}
 	}
+
 	React.useEffect(()=>{
 		document.title = "Статистика"
 		setUp()
-		const socket = io(process.env.REACT_APP_API_HOST)
+		const socket = io(import.meta.env.VITE_API_HOST)
 
 		socket.on('couriers-count', (count) =>{
 			count.length ? setOnline(count.length) : setOnline(0)
@@ -81,7 +83,7 @@ export default function Admin_section_main() {
 			// 		pb.style.width = `${(ordersData.new - 1) / ordersData.orders * 100}%`;
 			// 	}
 			// }
-			setUp()
+			setTimeout(() => setUp(), 1000);
 		})
 
 		// При изменени статуса заказа, убирать заказ из прошлого статуса и добавить в новый
@@ -91,7 +93,7 @@ export default function Admin_section_main() {
 			// 	[prevStatus]: prevState[prevStatus] - 1,
 			// 	[status]: prevState[status] + 1
 			// }))
-			setUp()
+			setTimeout(() => setUp(), 1000);
 			
 		})
 		socket.on('connect', () => {
@@ -105,6 +107,7 @@ export default function Admin_section_main() {
 			socket && socket.close()
 		}
 	}, [])
+
 	React.useEffect(()=>{
 		onlinePbBar(online, couriersData)
 	}, [online])
@@ -146,52 +149,82 @@ export default function Admin_section_main() {
 		<>
             <div className="lk-section-item main">
 				<div className="selection-main-block">
-					<h2>Заказы</h2>
+					<h2 style={{marginBottom: 0}}>Заказы</h2>
 					<img src={refresh} onClick={(e) => startRefresh(e)} alt="refresh" className='refresh-stats'/>
 					<div>
 						<div className="info-block">
 							<h3>Новые</h3>
-							<h3>{ordersData && ordersData.new}</h3>
+							<h3>{ordersData?.new}</h3>
 						</div>
 						<div className="progress-container">
-							<div id='new' className="progress" style={{backgroundColor: '#2ECC71'}}></div>
+							<div id='new' className="progress" style={{backgroundColor: '#FFB27A'}}></div>
 						</div>
 					</div>
 
 					<div>
 						<div className="info-block">
-							<h3>В пути</h3>
-							<h3>{ordersData && ordersData.pending}</h3>
+							<h3>Приняты</h3>
+							<h3>{ordersData?.accept}</h3>
 						</div>
 						<div className="progress-container">
-							<div id='pending' className="progress" style={{backgroundColor: '#3498DB'}}></div>
+							<div id='accept' className="progress" style={{backgroundColor: '#78AAD8'}}></div>
 						</div>
 					</div>
 
 					<div>
+						<div className="info-block">
+							<h3>Готовятся</h3>
+							<h3>{ordersData?.cooking}</h3>
+						</div>
+						<div className="progress-container">
+							<div id='cooking' className="progress" style={{backgroundColor: '#FF7FAB'}}></div>
+						</div>
+					</div>
+
+					<div>
+						<div className="info-block">
+							<h3>Готовы</h3>
+							<h3>{ordersData?.ready}</h3>
+						</div>
+						<div className="progress-container">
+							<div id='ready' className="progress" style={{backgroundColor: '#BAA9C4'}}></div>
+						</div>
+					</div>
+
+					<div>
+						<div className="info-block">
+							<h3>Доставляются</h3>
+							<h3>{ordersData?.delivering}</h3>
+						</div>
+						<div className="progress-container">
+							<div id='delivering' className="progress" style={{backgroundColor: '#A69FAE'}}></div>
+						</div>
+					</div>
+
+					{/* <div>
 						<div className="info-block">
 							<h3>Отмененные</h3>
-							<h3>{ordersData && ordersData.canceled}</h3>
+							<h3>{ordersData?.canceled}</h3>
 						</div>
 						<div className="progress-container">
-							<div id='canceled' className="progress" style={{backgroundColor: '#E74C3C'}}></div>
+							<div id='canceled' className="progress" style={{backgroundColor: '#d0d0d0'}}></div>
 						</div>
-					</div>
+					</div> */}
 
-					<div>
+					{/* <div>
 						<div className="info-block">
 							<h3>Завершенные</h3>
-							<h3>{ordersData && ordersData.ended}</h3>
+							<h3>{ordersData?.ended}</h3>
 						</div>
 						<div className="progress-container">
 							<div id='ended' className="progress" style={{backgroundColor: '#d0d0d0'}}></div>
 						</div>
-					</div>
+					</div> */}
 
 					<div>
 						<div className="info-block">
 							<h3>Всего</h3>
-							<h3>{ordersData && ordersData.orders}</h3>
+							<h3>{ordersData?.orders}</h3>
 						</div>
 						<div className="progress-container">
 							<div id='orders' className="progress" style={{backgroundColor: '#d0d0d0'}}></div>
@@ -204,7 +237,7 @@ export default function Admin_section_main() {
 					<div>
 						<div className="info-block">
 							<h3>На заказе</h3>
-							<h3>{couriersData && couriersData.working}</h3>
+							<h3>{couriersData?.working}</h3>
 						</div>
 						<div className="progress-container">
 							<div id='working' className="progress" style={{backgroundColor: '#2ECC71'}}></div>
@@ -227,7 +260,7 @@ export default function Admin_section_main() {
 							<h3>{couriersData && (couriersData.couriers - online)}</h3>
 						</div>
 						<div className="progress-container">
-							<div id='offline' className="progress" style={{backgroundColor: '#E74C3C'}}></div>
+							<div id='offline' className="progress" style={{backgroundColor: '#ce6868'}}></div>
 						</div>
 					</div>
 

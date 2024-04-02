@@ -13,17 +13,28 @@ export default function Catalog() {
 	}, [])
 	return (
 		<div className='container'>
-			{/* <Header/> */}
 			<div className="header-img catalog"><h1>Candy Store</h1></div>
 			<div className="hide-popUp">
 				<div className="main-catalog">
 					<div className="items-block">
-						<Link to='/cakes' className="item item1"><img src={cake} alt="cake" width='100%' height='100%' /><p className='pos-abs'>ТОРТЫ</p></Link>
-						<Link to='/ice-cream'className="item item2"><img src={ice_cream} alt="cake" width='100%' height='100%' /><p className='pos-abs'>МОРОЖЕНОЕ</p></Link>
+						<Link to='/cakes' className="item item1">
+							<img src={cake} alt="cake" width='100%' height='100%' />
+							<p className='pos-abs'>ТОРТЫ</p>
+						</Link>
+						<Link to='/ice-cream'className="item item2">
+							<img src={ice_cream} alt="cake" width='100%' height='100%' />
+							<p className='pos-abs'>МОРОЖЕНОЕ</p>
+						</Link>
 					</div>
 					<div className="items-block">
-						<Link to='/candies' className="item item3"><img src={candies} alt="cake" width='100%' height='100%' /><p className='pos-abs'>КОНФЕТЫ</p></Link>
-						<Link to='/desserts' className="item item4"><img src={dessert} alt="cake" width='100%' height='100%' /><p className='pos-abs'>ДЕСЕРТЫ</p></Link>
+						<Link to='/candies' className="item item3">
+							<img src={candies} alt="cake" width='100%' height='100%' />
+							<p className='pos-abs'>КОНФЕТЫ</p>
+							</Link>
+						<Link to='/desserts' className="item item4">
+							<img src={dessert} alt="cake" width='100%' height='100%' />
+							<p className='pos-abs'>ДЕСЕРТЫ</p>
+						</Link>
 					</div>
 				</div>
 			</div>

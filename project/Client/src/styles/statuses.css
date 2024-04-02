@@ -1,0 +1,23 @@
+.new{
+	background-color: #E9D3C6;
+}
+.accept{
+	background-color: #AAC9CE;
+}
+.cooking{
+	background-color: #E5C1CD;
+}
+.ready{
+	background-color: #C9BBC8;
+}
+.delivering{
+	background-color: #B6B4C2;
+}
+.canceled{
+	background-color: #ce6868;
+}
+.ended{
+	background-color: #2F2F2F;
+}
+
+

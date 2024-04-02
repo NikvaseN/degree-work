@@ -22,10 +22,18 @@ export default function Socket (server){
 				socket.disconnect();
 			}
 		)
+		
 		socket.on('start-change-status', (id, prevStatus, status, room) =>{
 			socket.to(room).emit('change-status', id, status)
 			socket.to('admin').emit('change-status', prevStatus, status)
-			socket.to('courier').emit('change-status', prevStatus, status)
+
+			if(prevStatus === 'ready'|| status === 'ready'){
+				socket.to('courier').emit('change-status', prevStatus, status)
+			}
+			if(prevStatus === 'accept'|| status === 'accept'){
+				socket.to('confectioner').emit('change-status', prevStatus, status)
+			}
+			
 		})
 		
 		socket.on('join-room', (room) =>{
@@ -74,7 +82,6 @@ export default function Socket (server){
 		});
 
 		socket.on('appeal_write', (msg, user) => {
-			
 			const chat = appeales.find((appeal) => appeal.user._id === user._id);
 			if (chat) {
 				if(Array.isArray(msg)){

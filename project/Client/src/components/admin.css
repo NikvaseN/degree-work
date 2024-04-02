@@ -79,6 +79,10 @@ h2{
 	opacity: 1;
 }
 
+.profile-logo._noneborder{
+	border: none;
+}
+
 @media (max-width: 1400px){
 	.admin-support{
 		flex-direction: column;

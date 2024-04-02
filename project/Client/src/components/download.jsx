@@ -10,15 +10,24 @@ export function downloadTable (data) {
 				'user': [],
 				'courier': [],
 				'admin': [],
+				'confectioner': [],
 			};
 
-			data.forEach(user => {
+			const checkStaff = (obj) => {
+				const roles = [
+					'courier',
+					'confectioner',
+				]
+				return roles.includes(obj)
+			}
+
+			data.map(user => {
 				const role = user.role
 				let userData;
 				if(role === 'admin'){
 					userData = [user.fullName, user.phone, formatDate(user.createdAt, 'D-M-Y')]
 				}
-				if(role === 'courier'){
+				if(checkStaff(role)){
 					userData = [user.fullName, user.surname, user.patronymic, user.phone, user.city, user.street, user.house, formatDate(user.createdAt, 'D-M-Y')]
 				}
 				else{
@@ -43,9 +52,16 @@ export function downloadTable (data) {
 			]);
 			XLSX.utils.book_append_sheet(workbook, couriersList, 'Курьеры');
 
+			// Кондитеры
+			const confectionerList = XLSX.utils.aoa_to_sheet([
+			['Имя', 'Фамилия', 'Отчество', 'Телефон', 'Город', 'Улица', 'Дом', 'Дата присоединения'],
+				...accounts['confectioner'].map(user => [...user])
+			]);
+			XLSX.utils.book_append_sheet(workbook, confectionerList, 'Кондитеры');
+
 			// Администраторы
 			const adminsList = XLSX.utils.aoa_to_sheet([
-			['Имя', 'Телефон', 'Дата присоединения'],
+			['Имя', 'Телефон', 'Кол-во заказов',  'Дата присоединения'],
 				...accounts['admin'].map(user => [...user])
 			]);
 			XLSX.utils.book_append_sheet(workbook, adminsList, 'Администраторы');

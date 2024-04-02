@@ -1,4 +1,5 @@
 import ProductModel from '../models/product.js';
+import mongoose from 'mongoose';
 
 export const getAll = async (req,res) =>{
 	try{
@@ -15,6 +16,12 @@ export const getAll = async (req,res) =>{
 export const getCategory = async (req,res) =>{
 	try{
 		const categoryId = req.params.id;
+
+		if (!mongoose.isValidObjectId(categoryId)) {
+			return res.status(400).json({
+			  	msg: 'Некорректный тип идентификатора',
+			});
+		}
 
 		ProductModel.find({
 			category: categoryId,

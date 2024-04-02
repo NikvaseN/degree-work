@@ -102,11 +102,21 @@
 	background-color: #f54f4f;
 	border-radius: 0;
 }
+
 .repeat.admin-accept{
 	height: 55%;
 	top: 0;
 	background-color: #222;
 	border-radius: 0;
+}
+
+.repeat.admin-accept._full{
+	height: 100%;
+	font-size: 20px;
+}
+
+.repeat.admin-accept._full:hover{
+	font-size: 22px;
 }
 
 .btn-repeat.cancel{
@@ -168,18 +178,7 @@
 .icon_status.admin{
 	border-radius: 1em 0em 0em 1em;
 }
-.icon_status.new{
-	background-color: #F49543;
-}
-.icon_status.pending{
-	background-color: #39b5fd;
-}
-.icon_status.canceled{
-	background-color: #f54f4f;
-}
-.icon_status.ended{
-	background-color: #2F2F2F;
-}
+
 .header-links-black{
 	width: max-content;
 }

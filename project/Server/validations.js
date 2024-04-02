@@ -28,7 +28,7 @@ export const productCreateValidation = [
 	body('imageUrl', 'Неверная ссылка на изображение').isString().isLength({ min: 10 })
 ];
 
-export const courierCreateValidation = [
+export const staffCreateValidation = [
 	body('fullName', 'Введите имя').isLength({ min: 1 }).isString(),
 	body('surname', 'Введите фамилию').isLength({ min: 1 }),
 	body('patronymic', 'Введите отчество').isString().isLength({ min: 1 }),
@@ -54,8 +54,15 @@ export const accountUpdateValidation = [
 	body('apartment', 'Введите квартиру проживания').isString().isLength({ min: 1}).optional(),
 ];
 
-export const recipeCreateValidation = [
-	body('name', 'Введите название рецепта').isLength({ min: 2, max: 100}).isString(),
-	body('composition', 'Введите состав').isLength({ min: 2, max: 100}).isString(),
+export const recipeSuggestValidation = [
+	body('name', 'Введите название рецепта').isLength({ min: 2}).isString(),
+	body('composition', 'Введите состав').isLength({ min: 2}).isString(),
 	body('method', 'Введите рецепт').isLength({ min: 2 }).isString(),
+];
+
+export const recipeCreateValidation = [
+	body('name', 'Введите название рецепта').isLength({ min: 2}).isString(),
+	body('steps', 'Введите шаги приготовления').isLength({ min: 1}).isArray(),
+	body('ingredients', 'Введите ингредиенты').isLength({ min: 1 }).isArray(),
+	body('time', 'Введите ингредиенты').isNumeric().optional(),
 ];

@@ -1,5 +1,6 @@
 import OrderModel from '../models/order.js';
 import crypto from 'crypto'
+import mongoose from 'mongoose';
 
 export const getAll = async (req,res) =>{
 	try{
@@ -52,9 +53,8 @@ export const getUser = async (req,res) =>{
 
 export const getActive = async (req,res) =>{
 	try{
-
 		OrderModel.find({
-			$or:[ {'status':'new'}, {'status':'pending'}]
+			status: { $nin: ['ended', 'canceled'] }
 		},
 		(err,doc) =>{
 			if (err){
@@ -69,7 +69,10 @@ export const getActive = async (req,res) =>{
 				});
 			}
 			res.json(doc)
-		}).populate('products.product').populate('user');
+		}).populate('products.product').populate('user').populate({
+            path: 'courier',
+            select: 'fullName patronymic phone'
+        });
 		
 	} catch (err){
 		console.log(err)
@@ -82,6 +85,12 @@ export const getActive = async (req,res) =>{
 export const remove = async (req,res) =>{
 	try{
 		const orderId = req.params.id;
+
+		if (!mongoose.isValidObjectId(orderId)) {
+			return res.status(400).json({
+			  	msg: 'Некорректный тип идентификатора',
+			});
+		}
 		
 		OrderModel.findOneAndRemove({
 			_id: orderId,
@@ -188,6 +197,13 @@ export const create = async (req,res) =>{
 export const setStatus = async (req,res) =>{
 	try {
 		const orderId = req.params.id;
+
+		if (!mongoose.isValidObjectId(orderId)) {
+			return res.status(400).json({
+			  	msg: 'Некорректный тип идентификатора',
+			});
+		}
+
 		const status = req.body.status;
 		await OrderModel.updateOne({
 			_id: orderId 
@@ -227,7 +243,10 @@ export const getEnded = async (req,res) =>{
 				});
 			}
 			res.json(doc)
-		}).limit(limit).skip(skip).sort({ _id: -1 }).populate('products.product').populate('user');
+		}).limit(limit).skip(skip).sort({ _id: -1 }).populate('products.product').populate('user').populate({
+            path: 'courier',
+            select: 'fullName patronymic phone'
+        });;
 
 	} catch (err) {
 		console.log(err)

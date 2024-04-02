@@ -10,6 +10,7 @@ dotenv.config()
 
 // Подключение базы данных
 mongoose
+.set('strictQuery', true)
 .connect(process.env.DB)
 .then(() =>console.log('DB OK'))
 .catch((err) =>console.log('DB ERROR', err));

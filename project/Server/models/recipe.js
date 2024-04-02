@@ -7,11 +7,9 @@ const RecipeSchema = new mongoose.Schema({
 		unique: false,
 		required: true
 	},
-	phone: {
-		type : String, 
-		unique: false,
-		minLength: 11,
-		maxLength: 11,
+	canCall: {
+		type: Boolean,
+		default: true,
 	},
 	name: {
 		type: String,
@@ -19,19 +17,31 @@ const RecipeSchema = new mongoose.Schema({
 	},
 	composition: {
 		type: String,
-		required: true
 	},
 	method: {
 		type: String,
-		required: true
+	},
+	steps: {
+		type: [String],
+	},
+	ingredients : {
+		// [['Название', 'кол-во'=]]
+		type: [
+            [{
+                type: String,
+                required: true
+            }, {
+                type: String,
+                required: true
+            }]
+        ],
+	},
+	time: {
+		type: String,
 	},
 	verified: {
 		type: Boolean,
 		default: false
-	},
-	status: {
-		type: String,
-		default: 'new'
 	}
 },{
 	timestamps: true,

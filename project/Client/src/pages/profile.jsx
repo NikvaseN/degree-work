@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useRef} from "react"
-import '../components/courier_profile.css'
+import '../components/staff_profile.css'
 import '../components/normalize.css'
 import axios from '../axios.js'
 import load from "../img/icons/delivery.gif"
@@ -11,8 +11,9 @@ import birthday from '../img/icons/birthday.png'
 // import plus from '../img/icons/plus.png'
 // import default_profile from '../img/icons/default_profile.jpg'
 import { formatDate, formatPhoneNumber, escapeHtml} from "../components/functions.jsx"
-import { Context } from "../context.js"
+import { Context } from "../Context.jsx"
 import sad from '../img/icons/sad-anxious.gif';
+import { Toast } from "../components/swal.js"
 
 export default function Profile () {
 	const {user, isLoad} = useContext(Context);
@@ -111,15 +112,15 @@ export default function Profile () {
 				html:
 				  '<label for="swal-input1" style="margin: 0px 15px">Имя</label>' +
 				  `<input id="swal-input1" value="${escapeHtml(user.fullName)}" class="swal2-input"> <br>` +
-				  '<label for="swal-input2">Телефон</label>' +
-				  `<input id="swal-input2" value="${escapeHtml(user.phone)}" class="swal2-input"> <br>` +
+				//   '<label for="swal-input2">Телефон</label>' +
+				//   `<input id="swal-input2" value="${escapeHtml(user.phone)}" class="swal2-input"> <br>` +
 				  '<label for="swal-input3" style="margin: 0px 6px">Пароль</label>' +
 				  `<input id="swal-input3" class="swal2-input"> <br>`,
 				focusConfirm: false,
 				preConfirm: () => {
 				  return {
 					fullName: document.getElementById('swal-input1').value,
-					phone: document.getElementById('swal-input2').value,
+					// phone: document.getElementById('swal-input2').value,
 					password: document.getElementById('swal-input3').value,
 				  }
 				}
@@ -217,6 +218,50 @@ export default function Profile () {
 		}
 	}
 
+	const birthdaySet = async () =>{
+		const { value: birthday } = await Swal.fire({
+			title: 'Дата рождения',
+			html:
+			  '<h5>Будьте внимательны, дату рождения изменить будет нельзя</h5>' +
+			  `<input id="birthday" class="swal2-input" placeholder="01.01.2000"> <br>`,
+			focusConfirm: false,
+			preConfirm: () => {
+				return  document.getElementById('birthday').value
+			}
+		})
+		
+		const checkTypeDate = (date) =>{
+			return date.length === 10 && ((date[2] === '.' && date[5] === '.') || (date[2] === '-' && date[5] === '-') || (date[2] === '/' && date[5] === '/'))
+		}
+		
+		if(!checkTypeDate(birthday)){
+			Swal.fire(
+				'Не правильный формат даты!',
+				'01.01.2000',
+				'error'
+			)
+			return
+		}
+
+		const date = formatDate(birthday, 'D.M.Y')
+		await axios.post('/profile/birthday', {birthday: date})
+			.then(() =>{
+				Swal.fire(
+					'Успешно!',
+					'Дата рождения добавлена',
+					'success'
+				)
+				window.location.reload()
+			})
+			.catch(() =>{
+				Swal.fire(
+					'Ошибка!',
+					'Что-то пошло не так',
+					'error'
+				)
+			})
+	}
+
 	const recipeNameRef = useRef()
 	const recipeCompositionRef = useRef()
 	const recipeMethodRef = useRef()
@@ -238,19 +283,16 @@ export default function Profile () {
 			if(res.isConfirmed){
 				try{
 					const fields = {
-						user: user._id, 
-						phone: checkboxProneRef.current.checked ? null : user.phone,
+						canCall: checkboxProneRef.current.checked ? false : true,
 						name: recipeNameRef.current.value,
 						composition: recipeCompositionRef.current.value,
 						method: recipeMethodRef.current.value,
 					}
 					await axios.post('/recipe', fields).then(res =>{
-						Swal.fire(
-							'Успешно!',
-							'Рецепт отправлен',
-							'success'
-						)
-
+						Toast.fire({
+							icon: "success",
+							title: "Рецепт отправлен."
+						});
 						recipeNameRef.current.value = ''
 						recipeCompositionRef.current.value = ''
 						recipeMethodRef.current.value = ''
@@ -281,7 +323,7 @@ export default function Profile () {
 			}
 		})	
 	}
-
+	
 	return (
 		isLoad ?
 			user ?
@@ -311,8 +353,8 @@ export default function Profile () {
 					</div> */}
 					<div className="user-info-block">
 						<img src={birthday} alt="" width={22} height={22}/>
-						<p>Дата регистрации: </p>
-						<p>{user.createdAt && formatDate(user.createdAt, 'D-M-Y')}</p>
+						<p>Дата рождения: </p>
+						<p>{user.birthday ? formatDate(user.birthday, 'D-M-Y') : <button className="header-links-black _white" onClick={birthdaySet}>Добавить</button>}</p>
 					</div>
 				</div>
 				<div className="profile-block suggest-recipe" style={{marginTop: 50}}>
@@ -320,12 +362,12 @@ export default function Profile () {
 					<div className="suggest-recipe__form_block" style={{width: '100%', height: showRecipeForm ? 'max-content' : 0, paddingTop: showRecipeForm ? 30 : 0}}>
 						<form className="suggest-recipe__form" onSubmit={(e) => sendRecipe(e)}>
 							<label htmlFor="name">Название</label>
-							<input ref={recipeNameRef} id="name" type="text" style={{width: '60%', color: 'white', borderBottom: '1px solid #F8F8F8', textAlign: 'center', marginBottom: 20}}/>
+							<input ref={recipeNameRef} id="name" type="text" placeholder='Торт «Трюфельный»' style={{width: '60%', color: 'white', borderBottom: '1px solid #F8F8F8', textAlign: 'center', marginBottom: 20}}/>
 							<label htmlFor="composition">Состав</label>
-							<textarea ref={recipeCompositionRef} name="composition" id="composition" className="suggest-recipe__form__textarea" onKeyUp={(e) => textAreaAdjust(e.target)}></textarea>
+							<textarea ref={recipeCompositionRef} name="composition" id="composition" placeholder='Яйца - 6 шт, Мука - 3 ст. л.' className="suggest-recipe__form__textarea" onKeyUp={(e) => textAreaAdjust(e.target)}></textarea>
 							<label htmlFor="method">Рецепт</label>
-							<textarea ref={recipeMethodRef}  name="method" id="method" className="suggest-recipe__form__textarea" onKeyUp={(e) => textAreaAdjust(e.target)}></textarea>
-							<p style={{fontSize : 15, width: '80%', textAlign : 'justify'}}>После отправки рецепта, если нас заинтересует ваш рецепт и мы захотим узнать подробнее, то мы вам позвоним. Если же вы не хотите, чтобы вам звонили, нажмите на кнопку «Не уточнять»</p>
+							<textarea ref={recipeMethodRef} placeholder="1. Яйца соединяем с сахаром и ванильным сахаром.&#10;2. Смешиваем венчиком до однородности."  name="method" id="method" className="suggest-recipe__form__textarea" onKeyUp={(e) => textAreaAdjust(e.target)}></textarea>
+							<p style={{fontSize : 15, width: '80%', textAlign : 'justify'}}>После отправки рецепта, если нас заинтересует ваш рецепт, но нам не будет хватать информации, то мы можем вам позвонить. Если же Вы не хотите, чтобы вам звонили, нажмите на кнопку «Не уточнять»</p>
 							<div className="checkbox-rect">
 								<input ref={checkboxProneRef} className="checkbox-pop" type="checkbox" id="checkbox"/>
 								<label htmlFor="checkbox"><span></span>Не уточнять</label>

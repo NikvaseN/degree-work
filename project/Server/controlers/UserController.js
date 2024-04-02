@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { validationResult } from 'express-validator';
 import userModel from '../models/user.js';
 import orderModel from '../models/order.js';
+import mongoose from "mongoose";
 
 // Регистрация
 export const register =  async (req,res) =>{
@@ -14,9 +15,9 @@ export const register =  async (req,res) =>{
 
 	const existingUser = await userModel.findOne({ phone: req.body.phone });
     if (existingUser) {
-      return res.status(403).json({
-        msg: 'Аккаунт с таким номером телефона уже существует'
-      });
+      	return res.status(409).json({
+        	msg: 'Аккаунт с таким номером телефона уже существует'
+      	});
     }
 	
 	const password = req.body.password;
@@ -73,7 +74,7 @@ export const login =  async (req,res) =>{
 		const token = jwt.sign({
 			_id: user._id,
 		}, process.env.HASH,{
-			expiresIn: '30d'
+			expiresIn: '3d'
 		})
 		const {passwordHash, ...userData} = user._doc
 
@@ -173,11 +174,15 @@ export const search = async (req,res) => {
 	}
 }
 
-// Обновить аккаунт
+// Обновить аккаунт (Администратор)
 export const updateAccount = async (req,res) => {
 	try {
 		const accountId = req.params.id;
-
+		if (!mongoose.isValidObjectId(accountId)) {
+			return res.status(400).json({
+			  	message: 'Некорректный тип идентификатора',
+			});
+		}
 		const updateFields = {};
 		const fieldsToUpdate = [
 		  'fullName',
@@ -204,6 +209,15 @@ export const updateAccount = async (req,res) => {
 			const salt = await bcrypt.genSalt(10);
 			const hash = await bcrypt.hash(password, salt);
 			updateFields.passwordHash = hash;
+		}
+
+		if (req.body.birthday){
+			const birthday = req.body.birthday
+			if (!(birthday instanceof Date) && isNaN(Date.parse(birthday))) {
+				return res.status(400).json({
+					msg: "Некорректный формат даты рождения",
+				});
+			}
 		}
 
 		await userModel.updateOne(
@@ -255,6 +269,13 @@ export const photoUpdate = async (req,res) => {
 export const removeAccount = async (req,res) =>{
 	try{
 		const accountId = req.params.id;
+
+		if (!mongoose.isValidObjectId(accountId)) {
+			return res.status(400).json({
+			  	msg: 'Некорректный тип идентификатора',
+			});
+		}
+
 		userModel.findOneAndRemove({
 			_id: accountId,
 			role: { $ne: 'admin' }
@@ -289,6 +310,12 @@ export const removeAccount = async (req,res) =>{
 export const getOne = async (req,res) =>{
 	try{
 		const userId = req.params.id;
+
+		if (!mongoose.isValidObjectId(userId)) {
+			return res.status(400).json({
+			  	msg: 'Некорректный тип идентификатора',
+			});
+		}
 
 		userModel.findOneAndUpdate({
 			_id: userId
@@ -328,7 +355,7 @@ export const update = async (req,res) => {
 		  'fullName',
 		  'surname',
 		  'patronymic',
-		  'phone',
+		//   'phone',
 		  'city',
 		  'street',
 		  'house',
@@ -337,7 +364,6 @@ export const update = async (req,res) => {
 		  'imageUrl',
 		];
 
-		/// Проверка пароля 
 		const user = await userModel.findById(accountId);
 		if (!user){
 			return res.status(403).json({
@@ -345,13 +371,13 @@ export const update = async (req,res) => {
 			});
 		}
 
+		/// Проверка пароля 
 		const isValidPass = await bcrypt.compare(req.body.prevPassword, user._doc.passwordHash);
 		if (!isValidPass){
 			return res.status(400).json({
 				msg:"Неверный пароль"
 			})
 		}
-		///
 
 		// Проверяем какие поля нужно изменить
 		fieldsToUpdate.map(field => {
@@ -390,6 +416,45 @@ export const update = async (req,res) => {
 		console.log(err)
 		res.status(500).json({
 			msg:"Не удалось обновить аккаунт"
+		})
+	}
+}
+
+export const birthday = async (req,res) => {
+	try {
+		const accountId = req.userId;
+
+		const user = await userModel.findById(accountId);
+		if (!user){
+			return res.status(403).json({
+				msg:"Пользователь не найден"
+			});
+		}
+
+		if(user.birthday){
+			return res.status(403).json({
+				msg:"Дата рождения уже добавлена"
+			});
+		}
+		const birthday = req.body.birthday
+
+		if (!(birthday instanceof Date) && isNaN(Date.parse(birthday))) {
+			return res.status(400).json({
+				msg: "Некорректный формат даты рождения",
+			});
+		}
+
+		user.birthday = birthday
+		user.save()
+
+		res.status(200).json({
+			msg:"Дата рождения успешно добавлена"
+		})
+
+	} catch (err) {
+		console.log(err)
+		res.status(500).json({
+			msg:"Не удалось добавить дату рождения"
 		})
 	}
 }

@@ -1,8 +1,8 @@
 import express from 'express';
 import checkAuth from '../utils/checkAuth.js';
-import checkModerator from '../utils/checkModerator.js';
 import OrderModel from '../models/order.js';
 import * as CourierController from '../controlers/CourierController.js';
+import {checkModerator} from '../utils/checkRole.js';
 
 const app = express();
 

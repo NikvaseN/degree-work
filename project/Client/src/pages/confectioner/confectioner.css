@@ -1,0 +1,42 @@
+#toggleSecureMode {
+	height: 1.8rem;
+	width: 4rem;
+}
+
+#toggleSecureMode::before {
+	height: 1.2rem;
+	width: 1.2rem;
+	left: 0.5rem;
+}
+
+#toggleSecureMode::after {
+	font-size: 0.72rem;
+	top: 0.5rem;
+	right: 0.7rem;
+}
+
+#toggleSecureMode:checked::before {
+	left: 2.1rem;
+}
+
+.toggle-checkbox:checked::after {
+	left: 0.6rem;
+}
+
+.toggle-checkbox-block{
+	margin-top: 60px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+}
+
+.toggle-checkbox-block>p{
+	white-space: nowrap;
+}
+
+.toggle-checkbox-block>p{
+	margin-top: -5px;
+}

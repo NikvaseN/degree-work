@@ -8,14 +8,16 @@
     "client": "cd ./Client && npm start",
     "server": "cd ./Server && npm start",
     "server-test": "cd ./Server && npm run start-test",
-    "setup":"cd ./Client && npm i && copy example.env .env && cd ../Server && npm i && copy example.env .env && copy example.env.test .env.test && copy example.env.dev .env.dev && cd ../../"
+    "setup": "cd ./Client && npm i && copy example.env .env && cd ../Server && npm i && copy example.env .env && copy example.env.test .env.test && copy example.env.dev .env.dev && cd ../../",
+    "update": "cd ./Client && npm update && cd ../Server && npm update && cd ../../"
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.irkat.ru/20069/coursework.git"
+    "url": "https://github.com/NikvaseN/degree-work"
   },
-  "author": "",
+  "author": "NikvaseN",
   "license": "ISC",
   "dependencies": {
+    "npm": "^10.4.0"
   }
 }

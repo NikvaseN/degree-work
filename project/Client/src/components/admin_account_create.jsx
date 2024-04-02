@@ -1,7 +1,7 @@
 import '../components/normalize.css'
 import '../components/form.css'
 import './admin_account_create.css'
-import React from 'react';
+import React, { useRef } from 'react';
 import axios from '../axios.js'
 import InputMask from 'react-input-mask';
 import swal from 'sweetalert2';
@@ -11,8 +11,9 @@ import place from '../img/form/place.png'
 import imgPhone from '../img/form/phone.png'
 import imgPassword from '../img/form/password.png'
 import Swal from 'sweetalert2';
+import { ruRole, checkStaffExtAdmin} from '../config/roles.js';
 
-export default function Admin_account_create() {
+export default function Admin_account_create({reloadComponent}) {
 
 	React.useEffect(()=>{
 		document.title = "Создать аккаунт"
@@ -20,9 +21,9 @@ export default function Admin_account_create() {
 
 	const [target, setTarget] = React.useState(0)
 	const [name, setName] = React.useState('')
+	const [phone, setPhone] = React.useState('')
 	const [surname, setSurname] = React.useState('')
 	const [patronymic, setPatronymic] = React.useState('')
-	const [phone, setPhone] = React.useState()
 	const [city, setCity] = React.useState()
 	const [street, setSteet] = React.useState()
 	const [house, setHouse] = React.useState()
@@ -90,7 +91,7 @@ export default function Admin_account_create() {
 			swal.fire("Заполните все поля:", '- Телефон', "error");
 		}
 		let fields
-		if (target === 'courier'){
+		if (checkStaffExtAdmin(target)){
 			fields ={
 				fullName: name,
 				surname,
@@ -112,21 +113,22 @@ export default function Admin_account_create() {
 				password,
 			}
 		}
-		
-		let path = false
-		switch (target){
-			case ('user'):
-				path = '/auth/register'
-				break
-			case ('courier'):
-				path = '/couriers'
-				break
+
+		const routes = {
+			'user' : '/auth/register',
+			'courier' : '/couriers',
+			'confectioner' : '/confectioner',
 		}
+
+		const path = routes[target]
+
 		if(path){
-			await axios.post(path, fields).then(() =>
+			await axios.post(path, fields).then(() => {
 				swal.fire("Аккаунт успешно создан", '', "success")
+				reloadComponent()
+			}
 			).catch((err) =>{
-				swal.fire("Заполните все поля:", errsToStr(err), "error")
+				swal.fire("Ошибка!", errsToStr(err), "error")
 			})
 		}
 		// let category = target 
@@ -154,6 +156,7 @@ export default function Admin_account_create() {
 				<div className="favorites-navbar">
 					<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('user', e)}>Пользователь</div>
 					<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('courier', e)}>Курьер</div>
+					<div className="btn-add-cart favorites-btn" onClick={(e) => changeTarget('confectioner', e)}>Кондитер</div>
 				</div>
 					<div class="form">
 						<form action="" class="form-booking">
@@ -162,7 +165,7 @@ export default function Admin_account_create() {
 								<input class="form-input" type="text" id="username" placeholder="Введите имя" onChange ={(e) => setName(e.target.value)}/>
 								<hr/>
 							</div>
-							{target === 'courier' &&
+							{checkStaffExtAdmin(target) &&
 							<>
 								<div class="form-item">
 									<img src={pencil} alt="" width="20px"/>
@@ -186,11 +189,11 @@ export default function Admin_account_create() {
 								<input class="form-input" type="text" id="password" placeholder="Введите пароль" onChange ={(e) => setPassword(e.target.value)}/>
 								<hr/>
 							</div>
-							{target === 'courier' &&
+							{checkStaffExtAdmin(target) &&
 								<>
 									<div class="form-item">
 										<img src={place} alt="" width="20px"/>
-										<InputMask mask="99.99.9999" class="form-input" type="text" id="bithday" placeholder="Введите дату рождения" onChange ={(e) => setBirthday(e.target.value)}/>
+										<InputMask mask="99.99.9999" class="form-input" type="text" id="bithday" placeholder="Введите дату рождения" onChange ={(e) => setPhone(e.target.value)}/>
 										<hr/>
 									</div>
 									<div class="form-item">
@@ -215,7 +218,7 @@ export default function Admin_account_create() {
 									</div>
 									<div className='add-avatar-block' onClick={() => inputFileRef.current.click()}>
 										{imageUrl ?(
-											<img  alt="" width='200px' height='200px' src={`${process.env.REACT_APP_IMG_URL}${imageUrl}`}/>
+											<img  alt="" width='200px' height='200px' src={`${import.meta.env.VITE_IMG_URL}${imageUrl}`}/>
 
 										) : (
 											<img className='add-itme-img' src={plus} alt="" width='30%'/>
@@ -225,16 +228,16 @@ export default function Admin_account_create() {
 								</>
 							}
 							<div className='result-block'>
-								<h3>{target === 'courier' ? 'Курьер': 'Пользователь'}</h3>
+								<h3>{ruRole(target)}</h3>
 								<div className="result-block-item">
 									<p>ФИО: </p>
-									<p className='result-block-value'>{target === 'courier' ? (`${surname} ${name && name[0]}. ${patronymic && patronymic[0]}.`) : name}</p>
+									<p className='result-block-value'>{checkStaffExtAdmin(target) ? (`${surname} ${name && name[0]}. ${patronymic && patronymic[0]}.`) : name}</p>
 								</div>
 								<div className="result-block-item">
 									<p>Телефон: </p>
 									<p className='result-block-value'>{phone}</p>
 								</div>
-								{target === 'courier' &&
+								{checkStaffExtAdmin(target) &&
 								<>
 								<div className="result-block-item">
 									<p>Дата рождения: </p>

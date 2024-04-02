@@ -1,6 +1,7 @@
 import Header from '../components/header.jsx';
 import '../components/normalize.css'
 import '../components/history.css'
+import '../styles/statuses.css'
 import load from "../img/icons/load.gif"
 import undefined from "../img/icons/undefined.webp"
 import imgWarning from '../img/icons/warning.png';
@@ -10,27 +11,24 @@ import {Link} from "react-router-dom";
 import React, {useContext} from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
-import {Context} from '../context.js';
+import {Context} from '../Context.jsx';
+import { formatDate } from '../components/functions.jsx';
+import { ruStatus } from '../config/statuses.js';
 
 export default function History() {
 	const [historyEmpty, setHistoryEmpty] = React.useState(true)
 	const [pageLoad, setPageLoad] = React.useState(false)
 	const navigate = useNavigate()
-	const [user, setUser] = React.useState()
-	const [isLoad, setIsLoad] = React.useState(false)
 	const [orders, setOrders] = React.useState([])
-	const {setQuantityCart} = useContext(Context);
+	const {setQuantityCart, user, isLoad} = useContext(Context);
 	
 	const getData = async (user) =>{
 		if (user){
-			const fields = {
-				user
-			}
-			await axios.post('/orders/history', fields).then(res =>{
-				if(res.data[0] !== undefined){
+			await axios.post('/orders/history', {user}).then(res =>{
+				if(res.data && res.data[0]){
 					setHistoryEmpty(false)
+					setOrders(res.data.reverse())
 				}
-				setOrders(res.data.reverse())
 				setPageLoad(true)
 			})
 		}
@@ -39,19 +37,20 @@ export default function History() {
 				const fields = {
 					nonAuthUser: window.localStorage.getItem('nonAuthUser')
 				}
-				axios.post('/orders/history', fields).then(res =>{
-					if(res.data[0] !== undefined){
+				await axios.post('/orders/history', fields).then(res =>{
+					if(res.data && res.data[0]){
+						setOrders(res.data.reverse())
 						setHistoryEmpty(false)
 					}
-					setOrders(res.data.reverse())
 					setPageLoad(true)
 				})
 			}
 			else{
-				if(JSON.parse(window.localStorage.getItem ('history'))[0] !== undefined){
+				const history = JSON.parse(window.localStorage.getItem('history'))
+				if(history && history[0]){
 					setHistoryEmpty(false)
+					setOrders(JSON.parse(window.localStorage.getItem ('history')).reverse())
 				}
-				setOrders(JSON.parse(window.localStorage.getItem ('history')).reverse())
 				setPageLoad(true)
 			}
 		}
@@ -59,32 +58,36 @@ export default function History() {
 	
 	const [socket, setSocket] = React.useState()
 
-	const start = async() =>{
+	const start = () =>{
 		document.title = "История заказов"
-		let socket = io(process.env.REACT_APP_API_HOST)
-		await axios.get('/auth/me').then(res =>{
-			setUser(res.data)
-			getData(res.data._id)
-			socket.emit('join-room', res.data._id)
+		if (user){
+			let socket = io(import.meta.env.VITE_API_HOST)
+			getData(user._id)
+			socket.emit('join-room', user._id)
 			socket.on('change-status', (id, status) =>{
 				setOrders(prev => prev.map(item => item._id === id ? {...item, status: status} : item))
 			})
 			setSocket(socket)
-		}).catch(() => {
-			setPageLoad(true)
+		}
+		else{
 			getData(false)
-			setIsLoad(true)
 			let nonAuthUserID = window.localStorage.getItem('nonAuthUser')
-			socket.emit('join-room', nonAuthUserID)
-			socket.on('change-status', (id, status) =>{
-				setOrders(prev => prev.map(item => item._id === id ? {...item, status: status} : item))
-			})
-			setSocket(socket)
-		})
-	} 
+			if(nonAuthUserID){
+				let socket = io(import.meta.env.VITE_API_HOST)
+				socket.emit('join-room', nonAuthUserID)
+				socket.on('change-status', (id, status) =>{
+					setOrders(prev => prev.map(item => item._id === id ? {...item, status: status} : item))
+				})
+				setSocket(socket)
+			}
+		}
+	}
+
 	React.useEffect(() =>{
-		start()
-	}, [])
+		if(isLoad){
+			start()
+		}
+	}, [isLoad])
 
 	React.useEffect(()=>{
 		return () =>{
@@ -163,6 +166,7 @@ export default function History() {
 		}
 		return (n + str)
 	}
+	
 	const repeat = (products) =>{
 		window.localStorage.setItem('cart', JSON.stringify(products))
 		let quantity = products.reduce((acc, obj) => acc + obj.value, 0);
@@ -172,7 +176,7 @@ export default function History() {
 	
 	const cancel = async (e, id) =>{
 		e.stopPropagation();
-		let socket = io(process.env.REACT_APP_API_HOST)
+		let socket = io(import.meta.env.VITE_API_HOST)
 		let ordersT = orders
 		for (let i=0; i < ordersT.length; i++){
 			if(ordersT[i]._id === id){
@@ -208,23 +212,14 @@ export default function History() {
 
 	let main = []
 	let icon_status = []
+
 	const cheackStatus = (status) =>{
 		icon_status = []
 		let Class = 'icon_status ' + status
 		icon_status.push(
 			<div className={Class} ></div>
 		)
-
-		switch (status){
-			case 'new':
-				return 'Проверка'
-			case 'pending':
-				return 'В пути'
-			case 'canceled':
-				return 'Отменен'
-			case 'ended':
-				return 'Завершен'
-		}
+		return ruStatus(status)
 
 	}
 
@@ -233,7 +228,7 @@ export default function History() {
 			<>
 				<p style={{fontSize : 36}}>Ваши заказы</p>
 				<div className="hr"></div>
-				{(isLoad && !user) && 
+				{(pageLoad && !user) && 
 				<div className="warning-bloack">
 					<div className="warning-title">
 						<img src={imgWarning} alt="warning" width={50}/>
@@ -242,21 +237,18 @@ export default function History() {
 					<ul>
 						<li>Сохранять историю заказов на аккаунт</li>
 						<li>Получение различных бонусов</li>
+						<li>Предлагать новые рецепты</li>
 					</ul>
 				</div>
 				}
 				{(orders).map((obj, index) => (
 					!cheackOpenItem(index) ? (
 						<div key={obj._id} className="history-item" onClick={() => setOpenedItems(index)}>
-							{day(obj.createdAt)}
-							{hour(obj.createdAt)}
-							{fullDate(index)}
 							<p>№ {obj.number}</p>
 							<p style={{width:90}}>{cheackStatus(obj.status)}</p>
-							
 							{icon_status}
-							<p className='history-order__date'>{day_date[index]}</p>
-							{!user && <p>{hour_date[index]}</p>}
+							<p className='history-order__date'>{formatDate(obj.createdAt, 'Y-M-D')}</p>
+							{!user && <p>{formatDate(obj.createdAt, 'h:m')}</p>}
 							<p className='header-links-black'>{quantity(obj.products.reduce((acc, obj) => acc + obj.value, 0))}</p>
 							<p>Итого: {obj.fullPrice.toLocaleString()}</p>
 								{obj.status === 'new' ?
@@ -267,14 +259,11 @@ export default function History() {
 						</div>
 					):(
 						<div key={obj._id} className="history-item open" onClick={() => setOpenedItems(index)}>
-							{day(obj.createdAt)}
-							{hour(obj.createdAt)}
-							{fullDate(index)}
 							<div className="history-item-title">
 								<p>№ {obj.number}</p>
 								{obj.methodDelivery === 'delivery' ? (<><p>Доставка</p><p>{`${obj.street}, д. ${obj.house}, кв. ${obj.apartment}`}</p></>) : (<p>Самовывоз</p>) }
-								<p>{day_date[index]}</p>
-								<p>{hour_date[index]}</p>
+								<p>{formatDate(obj.createdAt, 'Y-M-D')}</p>
+								<p>{formatDate(obj.createdAt, 'h:m')}</p>
 							</div>
 							{/* {obj.methodDelivery === 'delivery' ? 
 								(<>
@@ -310,7 +299,7 @@ export default function History() {
 							{(obj.products).map((obj, index) => (
 								obj.product ? (
 								<div key={obj.product._id} className="cart-item history">
-									<img src={`${process.env.REACT_APP_IMG_URL}${obj.product.imageUrl}`} alt="" width={300} height={220}/>
+									<img src={`${import.meta.env.VITE_IMG_URL}${obj.product.imageUrl}`} alt="" width={300} height={220}/>
 									<div className="cart-item-text">
 										<h2 className='history-item__name'>{obj.product.name}</h2>
 										<h5 className='history-item__composition' >Состав: <span>{obj.product.composition}</span> </h5>

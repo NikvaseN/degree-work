@@ -2,7 +2,7 @@ import Header from '../components/header.jsx';
 import '../components/normalize.css'
 import '../components/item_change.css'
 import axios from '../axios.js';
-import React from 'react';
+import React, {useContext} from 'react';
 import accept from '../img/icons/accept.png'
 import cancel from '../img/icons/cancel.png'
 import close from '../img/icons/close.png'
@@ -13,14 +13,13 @@ import imgLoad from '../img/icons/load.gif'
 import imgRefresh from '../img/icons/refresh.png'
 import Swal from 'sweetalert2';
 import { escapeHtml } from '../components/functions.jsx';
+import { Context } from '../Context.jsx';
 
 export default function Item_change({reloadComponent}) {
 
 	const [findedItems, setFindedItems] = React.useState([])
 	const [isLoad, setIsLoad] = React.useState(false)
 	const [name, setName] = React.useState('')
-	const [user, setUser] = React.useState()
-
 
 	const search = async () =>{
 		const fields = {
@@ -44,15 +43,15 @@ export default function Item_change({reloadComponent}) {
 			reloadComponent()
 		}
 	}
-	
+
+	const {user} = useContext(Context);
 	React.useEffect(() =>{
 		document.title = "Редактирование"
-		axios.get('/auth/me').then(res =>{
-			access(res.data)
-			setUser(res.data)
-		})
-		search()
-	}, [])
+		if(user){
+			access(user)
+			search()
+		}
+	}, [user])
 	
 	const deleteItem = async (index) =>{
 		let item = findedItems[index]
@@ -237,7 +236,7 @@ export default function Item_change({reloadComponent}) {
 			(findedItems).map((obj, index) => (
 				cheackActive(index)&&
 				<div key={obj._id} className="cart-item">
-					<img src={`${process.env.REACT_APP_IMG_URL}${obj.imageUrl}`} alt="" width={383} height={260}/>
+					<img src={`${import.meta.env.VITE_IMG_URL}${obj.imageUrl}`} alt="" width={383} height={260}/>
 					<div className="cart-item-text item-change">
 						{cheackChanging(index) ? 
 						(

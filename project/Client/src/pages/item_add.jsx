@@ -2,17 +2,15 @@ import '../components/normalize.css'
 import '../components/favorites.css'
 import '../components/item_add.css'
 import plus from '../img/icons/plus.png'
-import React from 'react';
+import React, {useContext} from 'react';
 import axios from '../axios.js';
 import Swal from 'sweetalert2';
+import { Context } from '../Context.jsx';
 
 export default function Item_add() {
-	const [user, setUser] = React.useState()
+	const {user} = useContext(Context);
 	React.useEffect(()=>{
 		document.title = "Добавить товар"
-		axios.get('/auth/me').then(res =>{
-			setUser(res.data)
-		})
 	}, [])
 	const candies = '6378712c2dc9c0dfd59e467b'
 	const cakes = '637871432dc9c0dfd59e467d'
@@ -95,44 +93,44 @@ export default function Item_add() {
 			<p style={{fontSize : 36}}>Добавить товар</p>
 			<div className="hr"></div>
 			<div className="favorites-navbar" style={{marginTop: -30}}>
-				<div for='cakes' className="btn-add-cart favorites-btn" onClick={(e) => changeTarget(cakes, e)}>Торты</div>
-				<div for='candies' className="btn-add-cart favorites-btn" onClick={(e) => changeTarget(candies, e)}>Конфеты</div>
-				<div for='ice_cream' className="btn-add-cart favorites-btn" onClick={(e) => changeTarget(ice_cream, e)}>Мороженое</div>
-				<div for='dessert' className="btn-add-cart favorites-btn" onClick={(e) => changeTarget(dessert, e)}>Десерты</div>
+				<div htmlFor='cakes' className="btn-add-cart favorites-btn" onClick={(e) => changeTarget(cakes, e)}>Торты</div>
+				<div htmlFor='candies' className="btn-add-cart favorites-btn" onClick={(e) => changeTarget(candies, e)}>Конфеты</div>
+				<div htmlFor='ice_cream' className="btn-add-cart favorites-btn" onClick={(e) => changeTarget(ice_cream, e)}>Мороженое</div>
+				<div htmlFor='dessert' className="btn-add-cart favorites-btn" onClick={(e) => changeTarget(dessert, e)}>Десерты</div>
 			</div>
             <div className='item-add__form'>
-				<label for='name-input'>Название:</label>		
+				<label htmlFor='name-input'>Название:</label>		
 				<input type="text" id='name-input' placeholder='Введите название' className='item-add__input' onChange ={(e) => setName(e.target.value)}/>
 			</div>
             <div className='item-add__form'>
-                <label for='price-input'>Цена:</label>		
+                <label htmlFor='price-input'>Цена:</label>		
 				<input type="number" id='price-input' placeholder='Введите цену' className='item-add__input price' onChange ={(e) => setPrice(Number(e.target.value))}/>
                 <h3>руб.</h3>
 			</div>
 			<textarea className='add-item_composition' name="composition" id="composition" cols="30" rows="10" placeholder='Введите состав' onChange ={(e) => setComposition(e.target.value)}></textarea>
             <div className="item-cake">
-							<div className='add-itme-img-block' onClick={() => inputFileRef.current.click()}>
-								{imageUrl ?(
-									<img  alt="" width='100%' height='100%'  src={`${process.env.REACT_APP_IMG_URL}${imageUrl}`}/>
+				<div className='add-itme-img-block' onClick={() => inputFileRef.current.click()}>
+					{imageUrl ?(
+						<img  alt="" width='100%' height='100%'  src={`${import.meta.env.VITE_IMG_URL}${imageUrl}`}/>
 
-								) : (
-									<img className='add-itme-img' src={plus} alt="" width='30%'/>
-								)}
-							</div>
-							<div className="item-box">
-								<div className="text-box">
-									{name === ''?(
-                                         <p>Название</p>
-                                    ):(
-                                        <p>{name}</p>
-                                    )}
-									<p>{price.toLocaleString()} ₽</p>
-								</div>
-							</div>	
-						</div>
-					<input ref={inputFileRef} hidden type="file" id="upload" onChange={handleChangeFule}/>
-					<div className="btn-add-cart add-btn-save" onClick={save} style={{marginBottom: 50}}>Сохранить</div>
-					</main>
+					) : (
+						<img className='add-itme-img' src={plus} alt="" width='30%'/>
+					)}
+				</div>
+				<div className="item-box">
+					<div className="text-box">
+						{name === ''?(
+								<p>Название</p>
+						):(
+							<p>{name}</p>
+						)}
+						<p>{price.toLocaleString()} ₽</p>
+					</div>
+				</div>	
+			</div>
+			<input ref={inputFileRef} hidden type="file" id="upload" onChange={handleChangeFule}/>
+			<div className="btn-add-cart add-btn-save" onClick={save} style={{marginBottom: 50}}>Сохранить</div>
+			</main>
 
 		)}
 		</div>

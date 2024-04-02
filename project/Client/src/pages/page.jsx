@@ -11,11 +11,10 @@ import pen from '../img/icons/pen.png'
 import accept from '../img/icons/accept.png'
 import cancel from '../img/icons/cancel.png'
 import basket from '../img/icons/basket.png'
-import {useNavigate} from "react-router-dom";
 import next from '../img/icons/page-next.png'
 import last from '../img/icons/page-last.png'
 import {useContext } from 'react';
-import {Context} from '../context.js';
+import {Context} from '../Context.jsx';
 import Swal from 'sweetalert2'
 import { escapeHtml } from '../components/functions.jsx'
 
@@ -23,23 +22,13 @@ import { escapeHtml } from '../components/functions.jsx'
 import Header from '../components/header.jsx';
 export default function Page({title, category, title_ru, title_header}) {
 	const [data, setData] = React.useState('')
-	const [user, setUser] = React.useState('')
+	const {user, setQuantityCart} = useContext(Context);
 	const [favorites, setFavorites] = React.useState([])
-
-	// Context для колличества товаров в корзине
-	const { quantityCart, setQuantityCart} = useContext(Context);
 
 	// Кол-во тортов
 	const [length, setLength] = React.useState(0)
 	
-	const navigate = useNavigate()
-	const getUser = async () =>{
-
-		// user
-		await axios.get('/auth/me').then(res =>{
-			setUser(res.data)
-		}).catch()
-
+	const getFavorites = async () =>{
 		let dataFavorites
 		// data favorites
 		await axios.get('/like').then(res =>{
@@ -58,7 +47,7 @@ export default function Page({title, category, title_ru, title_header}) {
 			setLength(res.data.length)
 			setData(res.data)
 		}).catch()
-		getUser ()
+		getFavorites()
 		// axios.get(`/favorite/add/${g}`).then(res =>{		
 		// 	setLength(res.data.length)
 		// 	setData(res.data)
@@ -197,10 +186,10 @@ export default function Page({title, category, title_ru, title_header}) {
 	}
 
 	const checkModerator = () => {
-		if(user.role === 'moderator' || user.role === 'admin'){
+		if(user && (user.role === 'moderator' || user.role === 'admin')){
 			return true
 		}
-			return false
+		return false
 	}
 
 	const [changedName, setChangedName] = React.useState();
@@ -265,7 +254,7 @@ export default function Page({title, category, title_ru, title_header}) {
 						'Изменения приняты',
 						'success'
 					)
-					navigate(0)
+					window.location.reload()
 				})
 				.catch((err) =>{
 					Swal.fire(
@@ -305,7 +294,7 @@ export default function Page({title, category, title_ru, title_header}) {
 						'Товар удален',
 						'success'
 					)
-					navigate(0)
+					window.location.reload()
 				})
 				.catch((err) =>{
 					Swal.fire(
@@ -390,7 +379,7 @@ export default function Page({title, category, title_ru, title_header}) {
 						cheackActive(index + i * 2) &&
 						<div key={obj._id} className="item-cake">
 							<div className='item-img-block-cake' onClick={() => addCart(obj, 1)}>
-								<img src={`${process.env.REACT_APP_IMG_URL}${obj.imageUrl}`} alt="" width='100%' height='100%' className='item-img-cake'/>
+								<img src={`${import.meta.env.VITE_IMG_URL}${obj.imageUrl}`} alt="" width='100%' height='100%' className='item-img-cake'/>
 								<img src={basket} alt="" width='160px' height='160px' className='item-basket'/>
 								
 								<div className="more" onClick={(e) => popUp(obj, e)}>Подробнее</div>
@@ -474,7 +463,7 @@ export default function Page({title, category, title_ru, title_header}) {
                 </div>
 
                 <div className="pagination__page-size">
-                    <label for="page-size">Page size:</label>
+                    <label htmlFor="page-size">Page size:</label>
                     <input type="number" className="page-size__input" id="page-size" defaultValue='4' onChange ={(e) => setItemsOnPag(parseInt(e.target.value), setCurrentPage(1))}/>
                 </div>
             </div>
@@ -486,7 +475,7 @@ export default function Page({title, category, title_ru, title_header}) {
 				</div>
 				<div className="popup-item">
 					<button className='popup-close' onClick={closePopUp}><img src={close} alt="" width='28' height='28'/></button>
-					<img src={`${process.env.REACT_APP_IMG_URL}${product.imageUrl}`} alt="" width={383} height={274}/>
+					<img src={`${import.meta.env.VITE_IMG_URL}${product.imageUrl}`} alt="" width={383} height={274}/>
 
 					<h2 className='title-popup'>{product.name}</h2>
 					<h3 >Состав: {product.composition}</h3>

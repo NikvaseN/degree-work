@@ -1,9 +1,9 @@
-import {recipeSuggestValidation} from '../validations.js';
+import { recipeSuggestValidation, recipeCreateValidation } from '../validations.js';
 import checkAuth from '../utils/checkAuth.js';
 import handleValidationErrors from '../utils/handleValidationErrors.js';
 import express from 'express';
 import * as RecipeController from '../controlers/RecipeController.js';
-import {checkModerator, checkStaff} from '../utils/checkRole.js';
+import { checkModerator, checkStaff, checkConfectioner } from '../utils/checkRole.js';
 
 const app = express();
 
@@ -26,6 +26,6 @@ app.get('/recipe/all', checkAuth, checkStaff, RecipeController.show)
 app.delete('/recipe/:id', RecipeController.remove)
 
 // Редактировать рецепт
-app.patch('/recipe/:id', checkAuth, checkModerator, RecipeController.update)
+app.patch('/recipe/:id', checkAuth, checkConfectioner, recipeCreateValidation, handleValidationErrors, RecipeController.update)
 
 export default app

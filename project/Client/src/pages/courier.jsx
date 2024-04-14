@@ -57,13 +57,18 @@ export default function Courier() {
 	}, [isLoad])
 
 	const [targetComp, setTargetComp] = React.useState('orders')
-	const changeTarget = (e, com) =>{
-		let btns = document.getElementsByClassName('sidebar-item')
-		setTargetComp(com)
-		for(let i=0; i<btns.length; i++){
+	const changeTarget = (e, com) => {
+		let btns = document.getElementsByClassName('sidebar-item');
+		setTargetComp(com);
+		for (let i = 0; i < btns.length; i++) {
 			btns[i].classList.remove("focus");
 		}
-		e.target.classList.add("focus");
+		e.classList.add("focus");
+	};
+
+	const handleChangeFocus = (e, name) =>{
+		const targetBlock = e.currentTarget;
+    	changeTarget(targetBlock, name);
 	}
 
 	const onLogout = () =>{
@@ -184,19 +189,19 @@ export default function Courier() {
 					</div>
 					{/* <div className="lk-hr"></div> */}
 					<div className="sidebar-items-block" style={{marginTop: 30}}>
-						<div className="sidebar-item focus" onClick={(e) => changeTarget(e, 'orders')}>
+						<div className="sidebar-item focus" onClick={(e) => handleChangeFocus(e, 'orders')}>
 							<img src={home} alt=""/>
 							<p>Главная</p>
 						</div>
-						<div className="sidebar-item" onClick={(e) => changeTarget(e, 'history')}>
+						<div className="sidebar-item" onClick={(e) => handleChangeFocus(e, 'history')}>
 							<img src={history} alt=""/>
 							<p>История</p>
 						</div>
-						<div className="sidebar-item" onClick={(e) => changeTarget(e, 'profile')}>
+						<div className="sidebar-item" onClick={(e) => handleChangeFocus(e, 'profile')}>
 							<img src={profile} alt=""/>
 							<p>Профиль</p>
 						</div>
-						<div className="sidebar-item" onClick={(e) => changeTarget(e, 'support')}>
+						<div className="sidebar-item" onClick={(e) => handleChangeFocus(e, 'support')}>
 							<img src={support} alt=""/>
 							<p>Поддержка</p>
 						</div>

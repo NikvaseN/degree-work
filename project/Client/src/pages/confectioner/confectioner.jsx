@@ -57,14 +57,15 @@ export default function Confectioner() {
 	}, [])
 
 	const [targetComp, setTargetComp] = React.useState('orders')
-	const changeTarget = (e, com) =>{
-		let btns = document.getElementsByClassName('sidebar-item')
-		setTargetComp(com)
-		for(let i=0; i<btns.length; i++){
+
+	const changeTarget = (e, com) => {
+		let btns = document.getElementsByClassName('sidebar-item');
+		setTargetComp(com);
+		for (let i = 0; i < btns.length; i++) {
 			btns[i].classList.remove("focus");
 		}
-		e.target.classList.add("focus");
-	}
+		e.classList.add("focus");
+	};
 
 	const onLogout = () =>{
 		Swal.fire({
@@ -185,6 +186,11 @@ export default function Confectioner() {
 		
 	}
 
+	const handleChangeFocus = (e, name) =>{
+		const targetBlock = e.currentTarget;
+    	changeTarget(targetBlock, name);
+	}
+	
 	return(
 		pageIsLoad &&(
 		(user && (user.role === 'confectioner' || user.role === 'admin'))? (
@@ -208,21 +214,21 @@ export default function Confectioner() {
 							<img src={home} alt=""/>
 							<p>Главная</p>
 						</div> */}
-						<div className="sidebar-item focus" onClick={(e) => changeTarget(e, 'orders')}>
+						<div className="sidebar-item focus" onClick={(e) => handleChangeFocus(e, 'orders')}>
 							<img src={orders} alt=""/>
 							<p>Заказы</p>
 						</div>
-						<div className="sidebar-item" onClick={(e) => changeTarget(e, 'recipes')}>
+						<div className="sidebar-item" onClick={(e) => handleChangeFocus(e, 'recipes')}>
 							<img src={imgProducts} alt="" style={{filter: 'invert(100%)'}}/>
 							<p>Рецепты</p>
 						</div>
 						{!isSecureMode &&
 							<>
-								<div className="sidebar-item" onClick={(e) => changeTarget(e, 'profile')}>
+								<div className="sidebar-item" onClick={(e) => handleChangeFocus(e, 'profile')}>
 									<img src={imgUser} alt=""/>
 									<p>Профиль</p>
 								</div>
-								<div className="sidebar-item" onClick={(e) => changeTarget(e, 'support')}>
+								<div className="sidebar-item" onClick={(e) => handleChangeFocus(e, 'support')}>
 									<img src={support} alt=""/>
 									<p>Поддержка</p>
 								</div>
@@ -258,11 +264,11 @@ export default function Confectioner() {
 							targetComp === 'orders' ? (
 								<Confectioner_orders user={user}  key={refresh} mobile={mobile} reloadComponent={reloadComponent}/>
 							):
-							targetComp === 'recipes_create' ? (
-								<Recipes key={refresh} user={user} mobile={mobile} reloadComponent={reloadComponent}/>
-							):
 							targetComp === 'recipes' ? (
-								<Recipes_create key={refresh} goBack={() => setTargetComp('recipes_create')} user={user} mobile={mobile} reloadComponent={reloadComponent}/>
+								<Recipes key={refresh} setTargetComp={setTargetComp} user={user} mobile={mobile} reloadComponent={reloadComponent}/>
+							):
+							targetComp === 'recipes_create' ? (
+								<Recipes_create key={refresh} goBack={() => setTargetComp('recipes')} user={user} mobile={mobile} reloadComponent={reloadComponent}/>
 							):
 							targetComp === 'profile' ? (
 								<Profile key={refresh} user={user} mobile={mobile} reloadComponent={reloadComponent}/>

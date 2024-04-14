@@ -261,3 +261,9 @@ input::-webkit-inner-spin-button {
 .btn-goBack:hover{
 	transform: translateX(-10px);
 }
+
+.flex-center{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

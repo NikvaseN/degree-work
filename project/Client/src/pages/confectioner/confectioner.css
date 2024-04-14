@@ -40,3 +40,76 @@
 .toggle-checkbox-block>p{
 	margin-top: -5px;
 }
+
+.history-item.recipes{
+	display: flex;
+	justify-content: space-between;
+	padding: 0px 120px;
+	width: calc(80% - 240px);
+}
+
+.history-item.recipes>#recipe_name{
+	width: 40.4%;
+	display: flex;
+	justify-content: start;
+	white-space: nowrap;
+	overflow: hidden; 
+	text-overflow: ellipsis;
+}
+
+.history-item.recipes>#recipe_ingredients{
+	max-width: 40%;
+	white-space: nowrap;
+	overflow: hidden; 
+	text-overflow: ellipsis;
+}
+
+.recipe-block__steps{
+	width: 100%;
+}
+
+.recipe-block__steps__item{
+	display: flex;
+	gap: 20px;
+}
+
+.container.recipes_create{
+	width: calc(100% - 200px);
+	padding-left: 200px;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	gap: 20px;
+}
+
+.infoblock.recipe{
+	width: 400px;
+	height: 600px;
+	border: 1px solid black;
+	display: flex;
+	justify-content: start;
+	padding: 15px ;
+	gap: 10px;
+	overflow: auto;
+	margin-top: 100px;
+	border-radius: 1em 0em 0em 1em;
+}
+
+.infoblock.recipe>h2{
+	margin: 0;
+	padding: 10px 0;
+	font-size: 21px;
+	margin-bottom: -20px;
+}
+
+.infoblock.recipe>h3{
+	margin: 0;
+	padding: 0;
+	margin-top: 20px;
+}
+
+.infoblock.recipe>p{
+	font-size: 17px;
+	max-width: 100%;
+	word-break: break-all;
+}

@@ -73,6 +73,20 @@
 	justify-content: space-around;
 }
 
+.history-item-title.recipes>p{
+	max-width: 74%;
+	overflow: auto;
+}
+
+.history-item-title.recipes > p::-webkit-scrollbar {
+	height: 2px;
+}
+
+.history-item-title.recipes > p::-webkit-scrollbar-track {
+    background-color: none; /* Цвет трека */
+	display: none;
+}
+
 .history-item-title.center{
 	justify-content: center;
 }

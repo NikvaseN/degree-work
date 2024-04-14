@@ -29,4 +29,7 @@ app.get('/confectioner/finish/:id', checkAuth, checkConfectioner, ConfectionerCo
 // Создать рецепт
 app.post('/confectioner/recipe', checkAuth, checkConfectioner, recipeCreateValidation, handleValidationErrors, RecipeController.create)
 
+// Редактировать рецепт
+app.patch('/confectioner/recipe', checkAuth, checkConfectioner, recipeCreateValidation, handleValidationErrors, RecipeController.update)
+
 export default app

@@ -95,13 +95,19 @@ export default function Admin() {
 	}
 
 	const [target, setTarget] = React.useState('main')
-	const changeTarget = (e, com) =>{
-		let btns = document.getElementsByClassName('sidebar-item')
-		setTarget(com)
-		for(let i=0; i<btns.length; i++){
+
+	const changeTarget = (e, com) => {
+		let btns = document.getElementsByClassName('sidebar-item');
+		setTarget(com);
+		for (let i = 0; i < btns.length; i++) {
 			btns[i].classList.remove("focus");
 		}
-		e.target.classList.add("focus");
+		e.classList.add("focus");
+	};
+
+	const handleChangeFocus = (e, name) =>{
+		const targetBlock = e.currentTarget;
+    	changeTarget(targetBlock, name);
 	}
 
 	// Вызывает перезагрузку компонента
@@ -125,6 +131,7 @@ export default function Admin() {
 			setRolled(true)
 		}
 	}
+	
 	React.useEffect(()=>{
 		if(isLoad){
 			const sidebar = document.getElementById('sidebar')
@@ -220,23 +227,23 @@ export default function Admin() {
 						</div>
 						{/* <div className="lk-hr"></div> */}
 						<div className="sidebar-items-block">
-							<div className="sidebar-item focus" onClick={(e) => changeTarget(e, 'main')}>
+							<div className="sidebar-item focus" onClick={(e) => handleChangeFocus(e, 'main')}>
 								<img src={home} alt=""/>
 								<p>Главная</p>
 							</div>
-							<div className="sidebar-item" onClick={(e) => changeTarget(e, 'orders')}>
+							<div className="sidebar-item" onClick={(e) => handleChangeFocus(e, 'orders')}>
 								<img src={orders} alt=""/>
 								<p>Заказы</p>
 							</div>
-							<div className="sidebar-item" onClick={(e) => changeTarget(e, 'products')}>
+							<div className="sidebar-item" onClick={(e) => handleChangeFocus(e, 'products')}>
 								<img src={imgProducts} alt="" style={{filter: 'invert(100%)'}}/>
 								<p>Товары</p>
 							</div>
-							<div className="sidebar-item" onClick={(e) => changeTarget(e, 'accounts')}>
+							<div className="sidebar-item" onClick={(e) => handleChangeFocus(e, 'accounts')}>
 								<img src={imgUser} alt=""/>
 								<p>Аккаунты</p>
 							</div>
-							<div className="sidebar-item" onClick={(e) => changeTarget(e, 'support')}>
+							<div className="sidebar-item" onClick={(e) => handleChangeFocus(e, 'support')}>
 								<img src={support} alt=""/>
 								<p>Поддержка</p>
 								{appeales.length > 0 && 

@@ -40,6 +40,7 @@ export const create = async (req,res) =>{
 			user: user,
 			name: req.body.name,
 			steps: req.body.steps,
+			time: req.body.time,
 			ingredients: req.body.ingredients,
 			verified: true
 		})
@@ -107,7 +108,7 @@ export const remove = async (req,res) =>{
 	} catch (err) {
 		console.log(err)
 		res.status(500).json({
-			message:"Не удалось добавить рецепт"
+			message:"Не удалось удалить рецепт"
 		})
 	}
 }
@@ -122,6 +123,13 @@ export const update = async (req,res) =>{
 			});
 		}
 		const recipe = await RecipeModel.findById(id)
+		
+		recipe?.name && (recipe.name = req.body.name)
+		recipe?.steps && (recipe.steps = req.body.steps)
+		recipe?.ingredients && (recipe.ingredients = req.body.ingredients)
+		recipe?.time && (recipe.time = req.body.time)
+
+		recipe.save()
 		res.status(200).json(recipe)
 	} catch (err) {
 		console.log(err)
@@ -135,10 +143,11 @@ export const update = async (req,res) =>{
 export const search = async (req,res) =>{
 	try {
 		const search = req.body.name;
+		const verified = req.body.verified;
 		await RecipeModel.find({
-			// $and: [
-				// { verified: true },
-				// {
+			$and: [
+				{ verified: verified },
+				{
 					$or: [
 						{ name: { $regex: search, $options: 'i' } },
 						{ ingredients: {
@@ -147,8 +156,8 @@ export const search = async (req,res) =>{
 							}
 						} }
 					]
-				// }
-			// ]
+				}
+			]
 		}).then(items =>{
 			res.json(items)
 		})

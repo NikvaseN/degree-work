@@ -64,5 +64,5 @@ export const recipeCreateValidation = [
 	body('name', 'Введите название рецепта').isLength({ min: 2}).isString(),
 	body('steps', 'Введите шаги приготовления').isLength({ min: 1}).isArray(),
 	body('ingredients', 'Введите ингредиенты').isLength({ min: 1 }).isArray(),
-	body('time', 'Введите ингредиенты').isNumeric().optional(),
+	body('time', 'Введите время приготовления').isNumeric().optional(),
 ];

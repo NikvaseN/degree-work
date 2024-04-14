@@ -44,4 +44,4 @@ degree-work\project> npm run server
  degree-work\project> npm run client
   ```
 
-7. Перейти в браузере по адресу: http://localhost:3000.
+7. Перейти в браузере по адресу: http://localhost:5173.

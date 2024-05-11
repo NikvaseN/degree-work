@@ -353,6 +353,10 @@
 	display: none;
 }
 
+.header-img._header-mb{
+	margin-bottom: 50px;
+}
+
 @keyframes opacity{
 
 	0%{

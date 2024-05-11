@@ -333,7 +333,7 @@ export default function Profile () {
 					<div onClick={startChanging} className="change-profile">Редактировать</div>
 					<div onClick={startDeleting} className="change-profile _delete">Удалить</div>
 					<div className="courier-balance">Баллы: {user.balance}</div>
-					<h2>Профиль</h2>
+					<h2 className="profile-block__title">Профиль</h2>
 					{/* <div className="orders-info-block">
 						<p>Активных заказов: <span>{stats && stats.active}</span></p>
 						<p>Выполненных заказов: <span>{stats && stats.ended}</span></p>

@@ -1,6 +1,4 @@
-import Header from '../components/header.jsx';
 import '../components/normalize.css'
-import '../components/cart.css'
 import axios from '../axios.js';
 import React, {useContext, useState} from 'react';
 import {useNavigate, Link} from 'react-router-dom';
@@ -11,8 +9,9 @@ import {Context} from '../Context.jsx';
 import sad from '../img/icons/sad-anxious.gif';
 import crypto from 'crypto-js'
 import Swal from 'sweetalert2';
-import Map from '../components/getCoords/GetCoords.jsx'
+// import Map from '../components/getCoords/GetCoords.jsx'
 import InputMask from 'react-input-mask';
+import '../components/cart.css'
 
 export default function Cart() {
 	const navigate = useNavigate ()
@@ -256,11 +255,7 @@ export default function Cart() {
 		}
 		
 	}
-	const [defaultName, setDefaultName] = React.useState('')
-	const [defaultPhone, setDefaultPhone] = React.useState('')
 	const DataUser = () =>{
-		setDefaultName(user.fullName)
-		setDefaultPhone(user.phone)
 		setPhone(user.phone)
 		setUsername(user.fullName)
 	}
@@ -275,13 +270,10 @@ export default function Cart() {
 		if(action === 'get'){
 			let data = JSON.parse(window.localStorage.getItem ('user_data'))
 			console.log(data)
-			setDefaultName(data.username)
-			setDefaultPhone(data.phone)
 			setPhone(data.phone)
 			setUsername(data.username)
 		}
 	}
-	
 	const [coords, setCoords] = useState()
 	React.useEffect(()=>{
 		// Здесь можно сделать логику отправки координат на обратное геокодирование
@@ -292,12 +284,12 @@ export default function Cart() {
 		main.push(
 			!cartEmpty ? (
 				<>
-				<p style={{fontSize : 36}}>Ваш заказ</p>
+				<p className='your-order _cart'>Ваш заказ</p>
 				<div className="hr"></div>
 				{(isLoad && !user) && 
-				<div className="warning-bloack">
+				<div className="warning-block">
 					<div className="warning-title">
-						<img src={imgWarning} alt="warning" width={50}/>
+						<img src={imgWarning} alt="warning"/>
 						<h3>Войдите или создайте аккаунт, чтобы получить следующие возможности:</h3>
 					</div>
 					<ul>
@@ -310,15 +302,15 @@ export default function Cart() {
 				
 				{(cartItems).map((obj, index) => (
 					checkActiveItem(index) && obj.product &&(
-					<div key={obj.product._id} className="cart-item">
-						<div className='cart-item__img-block' style={{width: 360}}>
-							<img src={`${import.meta.env.VITE_IMG_URL}${obj.product.imageUrl}`} alt="Изображение товара" width={360} height={260}/>
+					<div key={obj.product._id} className="cart-item _cart">
+						<div className='cart-item__img-block _cart'>
+							<img src={`${import.meta.env.VITE_IMG_URL}${obj.product.imageUrl}`} alt="Изображение товара"/>
 						</div>
-						<div className="cart-item-text">
-							<h2 style={{fontSize : 30, marginTop:15, textAlign: 'left'}}>{obj.product.name}</h2>
-							<h3 style={{marginBottom : 60, marginTop: 45}}>Состав: <span>{obj.product.composition}</span> </h3>
-							<div className="price-block">
-								<div className="quantity-items pag-cart">
+						<div className="cart-item-text _cart">
+							<h2 className='cart-item-text__title _cart'>{obj.product.name}</h2>
+							<h3 className='cart-item-text__description _cart'>Состав: <span>{obj.product.composition}</span> </h3>
+							<div className="price-block _cart">
+								<div className="quantity-items pag-cart _cart">
 									<button style={{ fontSize : 40, marginTop:-10}} onClick={() => setValueDown(index)}>-</button>
 									<p>{value[index]}</p>
 									{/* <input type="text" defaultValue={value} onChange ={(e) => setPag(e.target.value)}/> */}
@@ -328,53 +320,53 @@ export default function Cart() {
 							</div>
 								
 							</div>
-						<button className='close-item-cart' onClick={() => deleteItemCart(index)}><img src={close} alt="" width='28' height='28'/></button>
+						<button className='close-item-cart _cart' onClick={() => deleteItemCart(index)}><img src={close} alt=""/></button>
 					</div>
 					)
 				))}
 				
-				<h2>ИТОГО: {fullPrice.toLocaleString()} ₽</h2>
-				<p style={{fontSize : 30, marginTop: 80}}>Оформление заказа</p>
-				<div className="hr" style={{marginTop: 50}}></div>
-				<p style={{fontSize : 28, marginBottom: 50}}>Способ доставки</p>
-				<div className="method-delivery-cart" >
-					<button className='btn-add-cart' onClick={() => methodDeliveryDelivery()}>Доставка</button>
-					<button className='btn-add-cart' onClick={() => methodDeliveryPickup()}>Самовывоз</button>
+				<h2 className='full-price _cart'>ИТОГО: {fullPrice.toLocaleString()} ₽</h2>
+				<p className='order-registration'>Оформление заказа</p>
+				<div className="hr _order-registration"></div>
+				<p className='delivery-title _cart'>Способ доставки</p>
+				<div className="method-delivery-cart _cart" >
+					<button className='btn-add-cart _cart' onClick={() => methodDeliveryDelivery()}>Доставка</button>
+					<button className='btn-add-cart _cart' onClick={() => methodDeliveryPickup()}>Самовывоз</button>
 				</div>
 				{methodDelivery === 'delivery' && (
 				<>
-					<p style={{fontSize : 28, marginBottom: 50}}>Личные данные</p>
+					<p className='delivery-title _cart'>Личные данные</p>
 					{user ?
-						<button className='btn-use-data' onClick={() => DataUser()}>Использовать сохраненные данные</button>
+						<button className='btn-use-data _cart' onClick={() => DataUser()}>Использовать сохраненные данные</button>
 						:
 						<div className="btn-use-data-block">
-							<button className='btn-use-data-half' onClick={() => DataLocalUser('set')}>Сохранить записанные данные</button>
+							<button className='btn-use-data-half _cart' onClick={() => DataLocalUser('set')}>Сохранить записанные данные</button>
 							<div className="btn-hr"></div>
-							<button className='btn-use-data-half' onClick={() => DataLocalUser('get')}>Использовать сохраненные данные</button>
+							<button className='btn-use-data-half _cart' onClick={() => DataLocalUser('get')}>Использовать сохраненные данные</button>
 						</div>
 					}
 					
-					<form className='cart-form'>
-						<label htmlFor='name-input' style={{fontSize : 28, marginBottom: 50, textAlign: 'center'}} className='input-order'>Введите имя</label>
-						<input type="text" id='name-input' className='cart-input' defaultValue={defaultName} onChange ={(e) => setUsername(e.target.value)}/>
+					<form className='cart-form _cart'>
+						<label htmlFor='name-input' className='delivery-title _cart input-order'>Введите имя</label>
+						<input type="text" id='name-input' className='cart-input _cart' defaultValue={username} onChange ={(e) => setUsername(e.target.value)}/>
 						
-						<label htmlFor='phone-input' className='input-order'>Номер телефона</label>
+						<label htmlFor='phone-input' className='delivery-title _cart input-order'>Номер телефона</label>
 						{validationPhoneFailed &&(
 							<p className='validationEror'>Введите номер телефона</p>
 						)}
-						<InputMask mask="8(999) 999-99-99" class="cart-input" type="text" id="phone-input" onChange ={(e) => setPhone(e.target.value.replace(/\D/g, ""))}/>
-						<div className="address-block">
-							<div className="address-block-item">
-								<label htmlFor='street-input' className='input-order'>Улица</label>
-								<input type="text" id='street-input' className='cart-input' onChange ={(e) => setStreet(e.target.value)}/>
+						<InputMask mask="8(999) 999-99-99" class="cart-input _cart" type="text" id="phone-input" value={phone} onChange ={(e) => setPhone(e.target.value.replace(/\D/g, ""))}/>
+						<div className="address-block _cart">
+							<div className="address-block-item _cart">
+								<label htmlFor='street-input' className='delivery-title _cart input-order'>Улица</label>
+								<input type="text" id='street-input' className='cart-input _cart __little' onChange ={(e) => setStreet(e.target.value)}/>
 							</div>
-							<div className="address-block-item">
-								<label htmlFor='house-input' className='input-order'>Дом</label>
-								<input type="text" id='house-input' className='cart-input' onChange ={(e) => setHouse(e.target.value)}/>
+							<div className="address-block-item _cart">
+								<label htmlFor='house-input' className='delivery-title _cart input-order'>Дом</label>
+								<input type="text" id='house-input' className='cart-input _cart __little' onChange ={(e) => setHouse(e.target.value)}/>
 							</div>
-							<div className="address-block-item">
-								<label htmlFor='apartment-input' className='input-order'>Кваритра</label>
-								<input type="text" id='apartment-input' className='cart-input' onChange ={(e) => setApartment(e.target.value)}/>
+							<div className="address-block-item _cart">
+								<label htmlFor='apartment-input' className='delivery-title _cart input-order'>Кваритра</label>
+								<input type="text" id='apartment-input' className='cart-input _cart __little' onChange ={(e) => setApartment(e.target.value)}/>
 							</div>
 						</div>
 					</form>
@@ -382,36 +374,36 @@ export default function Cart() {
 						<Map setCoords={setCoords} width={'100%'} height={'500px'}/>
 					</div> */}
 					
-					<button className='btn-add-cart' onClick={() => sendOrder()}>Заказать</button>
+					<button className='btn-add-cart send_order' onClick={() => sendOrder()}>Заказать</button>
 				</>
 				)}
 				{(methodDelivery === 'pickup' &&(
 					<>
-					<p style={{fontSize : 28, marginBottom: 50}}>Личные данные</p>
+					<p className='delivery-title _cart'>Личные данные</p>
 					{user ?
-						<button className='btn-use-data' onClick={() => DataUser()}>Использовать сохраненные данные</button>
+						<button className='btn-use-data _cart' onClick={() => DataUser()}>Использовать сохраненные данные</button>
 						:
 						<div className="btn-use-data-block">
-							<button className='btn-use-data-half' onClick={() => DataLocalUser('set')}>Сохранить записанные данные</button>
+							<button className='btn-use-data-half _cart' onClick={() => DataLocalUser('set')}>Сохранить записанные данные</button>
 							<div className="btn-hr"></div>
-							<button className='btn-use-data-half' onClick={() => DataLocalUser('get')}>Использовать сохраненные данные</button>
+							<button className='btn-use-data-half _cart' onClick={() => DataLocalUser('get')}>Использовать сохраненные данные</button>
 						</div>
 					}
 					<form className='cart-form'>
-						<label for='name-input' style={{fontSize : 28, marginBottom: 50, textAlign: 'center'}} className='input-order'>Введите имя</label>
-						<input type="text" id='name-input' className='cart-input' defaultValue={defaultName} onChange ={(e) => setUsername(e.target.value)}/>
+						<label htmlFor='name-input' className='delivery-title _cart input-order'>Введите имя</label>
+						<input type="text" id='name-input' className='cart-input _cart' defaultValue={username} onChange ={(e) => setUsername(e.target.value)}/>
 						
-						<label for='phone-input' className='input-order'>Номер телефона</label>
+						<label htmlFor='phone-input' className='input-order delivery-title _cart'>Номер телефона</label>
 						{validationPhoneFailed &&(
 							<p className='validationEror'>Введите номер телефона</p>
 						)}
-						<InputMask mask="8(999) 999-99-99" class="cart-input" type="text" id="phone-input" onChange ={(e) => setPhone(e.target.value.replace(/\D/g, ""))}/>
+						<InputMask mask="8(999) 999-99-99" class="cart-input _cart" type="text" id="phone-input" value={phone} onChange ={(e) => setPhone(e.target.value.replace(/\D/g, ""))}/>
 					</form>
-					<p style={{fontSize : 28, marginBottom: 50}}>Самовывоз</p>		
-					<p style={{fontSize : 22, marginBottom: 50}}>Вы можете подтвердить заказ и приехать к нам в магазин для оплаты и получения заказа</p>		
-					<p style={{fontSize : 22, marginBottom: 50}}>Адрес: Ул. Ленина 5А</p>
-					<p style={{fontSize : 22, marginBottom: 50}}>График:</p>
-					<p style={{fontSize : 22, marginBottom: 50}}>Пн 08:30–20:00 <br />
+					<p className='delivery-title _cart'>Самовывоз</p>		
+					<p className='delivery-title _cart description-a-take-order'>Вы можете подтвердить заказ и приехать к нам в магазин для оплаты и получения заказа</p>		
+					<p className='delivery-title _cart'>Адрес: Ул. Ленина 5А</p>
+					<p className='delivery-title _cart'>График:</p>
+					<p className='delivery-title _cart'>Пн 08:30–20:00 <br />
 						
 						Вт 08:30–20:00 <br />
 						Ср 08:30–20:00 <br />
@@ -420,8 +412,8 @@ export default function Cart() {
 						Сб Выходной<br />
 						Вс Выходной <br />
 	</p>
-					<iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A26813f20f39c4e90d9bb358c11190faea4af213cb57baa04cd8c56df455d132e&amp;source=constructor" width="950" height="400" frameBorder="0"></iframe>
-					<button className='btn-add-cart' style={{marginTop: 50}} onClick={() => sendOrder()}>Заказать</button>		
+					<iframe className='cart__map _cart' src="https://yandex.ru/map-widget/v1/?um=constructor%3A26813f20f39c4e90d9bb358c11190faea4af213cb57baa04cd8c56df455d132e&amp;source=constructor" width="950" height="400" frameBorder="0"></iframe>
+					<button className='btn-add-cart send_order' style={{marginTop: 50}} onClick={() => sendOrder()}>Заказать</button>		
 					</>
 				)
 				)}

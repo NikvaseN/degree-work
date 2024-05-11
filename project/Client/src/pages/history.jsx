@@ -229,16 +229,18 @@ export default function History() {
 				<p style={{fontSize : 36}}>Ваши заказы</p>
 				<div className="hr"></div>
 				{(pageLoad && !user) && 
-				<div className="warning-bloack">
-					<div className="warning-title">
-						<img src={imgWarning} alt="warning" width={50}/>
-						<h3>Войдите или создайте аккаунт, чтобы получить следующие возможности:</h3>
+				<div style={{display: 'flex', alignItems: 'center', width: '100%'}}>
+					<div className="warning-bloack">
+						<div className="warning-title">
+							<img src={imgWarning} alt="warning" width={50}/>
+							<h3>Войдите или создайте аккаунт, чтобы получить следующие возможности:</h3>
+						</div>
+						<ul>
+							<li>Сохранять историю заказов на аккаунт</li>
+							<li>Получение различных бонусов</li>
+							<li>Предлагать новые рецепты</li>
+						</ul>
 					</div>
-					<ul>
-						<li>Сохранять историю заказов на аккаунт</li>
-						<li>Получение различных бонусов</li>
-						<li>Предлагать новые рецепты</li>
-					</ul>
 				</div>
 				}
 				{(orders).map((obj, index) => (
@@ -248,9 +250,9 @@ export default function History() {
 							<p style={{width:90}}>{cheackStatus(obj.status)}</p>
 							{icon_status}
 							<p className='history-order__date'>{formatDate(obj.createdAt, 'Y-M-D')}</p>
-							{!user && <p>{formatDate(obj.createdAt, 'h:m')}</p>}
+							{/* {!user && <p>{formatDate(obj.createdAt, 'h:m')}</p>} */}
 							<p className='header-links-black'>{quantity(obj.products.reduce((acc, obj) => acc + obj.value, 0))}</p>
-							<p>Итого: {obj.fullPrice.toLocaleString()}</p>
+							<p className='history-item__total-price'>Итого: {obj.fullPrice.toLocaleString()}</p>
 								{obj.status === 'new' ?
 									(<div className="repeat cancel" onClick={(e) => cancel(e, obj._id)}>Отменить</div>)
 									:

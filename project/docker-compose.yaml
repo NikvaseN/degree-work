@@ -25,7 +25,7 @@ services:
     stdin_open: true
     tty: true
     depends_on:
-      - backendd
+      - backend
     networks:
       - backend
       - frontend

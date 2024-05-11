@@ -18,12 +18,11 @@ import {Context} from '../Context.jsx';
 import Swal from 'sweetalert2'
 import { escapeHtml } from '../components/functions.jsx'
 
-// import {Link} from "react-router-dom";
-import Header from '../components/header.jsx';
 export default function Page({title, category, title_ru, title_header}) {
 	const [data, setData] = React.useState('')
 	const {user, setQuantityCart} = useContext(Context);
 	const [favorites, setFavorites] = React.useState([])
+	const [mobile, setMobile] = React.useState(false)
 
 	// Кол-во тортов
 	const [length, setLength] = React.useState(0)
@@ -48,6 +47,8 @@ export default function Page({title, category, title_ru, title_header}) {
 			setData(res.data)
 		}).catch()
 		getFavorites()
+		const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+		setMobile(mobile)
 		// axios.get(`/favorite/add/${g}`).then(res =>{		
 		// 	setLength(res.data.length)
 		// 	setData(res.data)
@@ -248,7 +249,7 @@ export default function Page({title, category, title_ru, title_header}) {
 
 			//* Отправка изменений на сервер
 			if (res.isConfirmed) {
-				await axios.patch(`/products/${obj._id}`, fields).then(res => {
+				await axios.patch(`/products/${obj._id}`, fields).then(() => {
 					Swal.fire(
 						'Успешно!',
 						'Изменения приняты',
@@ -256,7 +257,7 @@ export default function Page({title, category, title_ru, title_header}) {
 					)
 					window.location.reload()
 				})
-				.catch((err) =>{
+				.catch(() =>{
 					Swal.fire(
 						'Ошибка!',
 						'Что-то пошло не так',
@@ -288,7 +289,7 @@ export default function Page({title, category, title_ru, title_header}) {
 
 			//* Отправка изменений на сервер
 			if (res.isConfirmed) {
-				await axios.delete(`/products/${item._id}`).then(res => {
+				await axios.delete(`/products/${item._id}`).then(() => {
 					Swal.fire(
 						'Успешно!',
 						'Товар удален',
@@ -296,7 +297,7 @@ export default function Page({title, category, title_ru, title_header}) {
 					)
 					window.location.reload()
 				})
-				.catch((err) =>{
+				.catch(() =>{
 					Swal.fire(
 						'Ошибка!',
 						'Что-то пошло не так',
@@ -353,7 +354,6 @@ export default function Page({title, category, title_ru, title_header}) {
 		}
 	}
 	pushPages()
-	let mainData = []
 	const main =[]
 	const mainCakes = () =>{
 		if(data){
@@ -378,7 +378,7 @@ export default function Page({title, category, title_ru, title_header}) {
 					{itemsToRender.map((obj, index) => (
 						cheackActive(index + i * 2) &&
 						<div key={obj._id} className="item-cake">
-							<div className='item-img-block-cake' onClick={() => addCart(obj, 1)}>
+							<div className='item-img-block-cake' onClick={(e) => {!mobile ? addCart(obj, 1) : popUp(obj, e)}}>
 								<img src={`${import.meta.env.VITE_IMG_URL}${obj.imageUrl}`} alt="" width='100%' height='100%' className='item-img-cake'/>
 								<img src={basket} alt="" width='160px' height='160px' className='item-basket'/>
 								
@@ -441,7 +441,7 @@ export default function Page({title, category, title_ru, title_header}) {
 		{/* {!openPopUp&&(
 			<Header/>
 		)} */}
-			<div className={`header-img ${title}`}><h1>{title_ru}</h1></div>
+			<div className={`header-img ${title} _header-mb`}><h1>{title_ru}</h1></div>
 			
 			<div className="main-cakes">
 				{main}
@@ -495,4 +495,4 @@ export default function Page({title, category, title_ru, title_header}) {
 		
 		</div>
 	);
-  };
+  }

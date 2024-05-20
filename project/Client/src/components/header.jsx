@@ -252,9 +252,14 @@ export default function Header() {
 				<p className='header-popup__title'>Регистрация</p>
 				{(incorrectRegister && errors) &&
 				<div className="errors-block">
-					{errors?.map((obj, i) => (
-					<p className='incorrect'>{obj.msg}</p>
-					))}
+					{errors && Array.isArray(errors) ?(
+						errors?.map((obj, i) => (
+							<p key={obj.msg} className='incorrect'>{obj.msg}</p>
+						))
+					):
+					(
+						<p className='incorrect'>{errors.msg}</p>
+					)}
 				</div>
 				}
 				<form className='cart-form' onSubmit={submitInput}>

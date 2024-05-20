@@ -228,8 +228,7 @@ export default function History() {
 			<>
 				<p style={{fontSize : 36}}>Ваши заказы</p>
 				<div className="hr"></div>
-				{(pageLoad && !user) && 
-				<div style={{display: 'flex', alignItems: 'center', width: '100%'}}>
+				{/* {(pageLoad && !user) && 
 					<div className="warning-bloack">
 						<div className="warning-title">
 							<img src={imgWarning} alt="warning" width={50}/>
@@ -240,9 +239,7 @@ export default function History() {
 							<li>Получение различных бонусов</li>
 							<li>Предлагать новые рецепты</li>
 						</ul>
-					</div>
-				</div>
-				}
+				</div>} */}
 				{(orders).map((obj, index) => (
 					!cheackOpenItem(index) ? (
 						<div key={obj._id} className="history-item" onClick={() => setOpenedItems(index)}>
@@ -298,7 +295,7 @@ export default function History() {
 								)
 							} */}
 							<div className="hr-medium history"></div>
-							{(obj.products).map((obj, index) => (
+							{(obj.products).map((obj) => (
 								obj.product ? (
 								<div key={obj.product._id} className="cart-item history">
 									<img src={`${import.meta.env.VITE_IMG_URL}${obj.product.imageUrl}`} alt="" width={300} height={220}/>
@@ -361,9 +358,8 @@ export default function History() {
 			: 
 			(
 				<img src={load} alt="load" />
-			)
-			 }
+			)}
 			
 		</div>
 	);
-  };
+  }

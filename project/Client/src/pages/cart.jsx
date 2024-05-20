@@ -164,7 +164,7 @@ export default function Cart() {
 		let nonAuthUser = window.localStorage.getItem('nonAuthUser')
 		if (!nonAuthUser){	
 			const hash = crypto.lib.WordArray.random(11);
-       		nonAuthUser = 'ID' + crypto.SHA256(hash).toString();
+			nonAuthUser = 'ID' + crypto.SHA256(hash).toString();
 			window.localStorage.setItem('nonAuthUser', nonAuthUser)
 		}
 		if(methodDelivery === 'delivery'){
@@ -286,7 +286,7 @@ export default function Cart() {
 				<>
 				<p className='your-order _cart'>Ваш заказ</p>
 				<div className="hr"></div>
-				{(isLoad && !user) && 
+				{/* {(isLoad && !user) && 
 				<div className="warning-block">
 					<div className="warning-title">
 						<img src={imgWarning} alt="warning"/>
@@ -297,9 +297,7 @@ export default function Cart() {
 						<li>Получение различных бонусов</li>
 						<li>Предлагать новые рецепты</li>
 					</ul>
-				</div>
-				}
-				
+				</div>} */}
 				{(cartItems).map((obj, index) => (
 					checkActiveItem(index) && obj.product &&(
 					<div key={obj.product._id} className="cart-item _cart">

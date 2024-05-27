@@ -19,6 +19,7 @@ mongoose
 const PORT = process.env.PORT
 const HOST = process.env.HOST
 const ENV = process.env.NAME
+const CLIENT = process.env.CLIENT
 
 
 // Настройка сервера 
@@ -26,7 +27,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-	origin: process.env.CLIENT
+	origin: CLIENT
 }));
 
 // Ограничение запросов

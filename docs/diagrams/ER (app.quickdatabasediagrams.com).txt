@@ -1,0 +1,56 @@
+
+Category as c
+-
+CategoryID PK ObjectId
+Name String
+
+User as u
+-
+UserID PK ObjectId
+Fullname String
+Surname String
+Patronymic String
+Phone String
+City String
+Street String
+House String
+Apartment String
+PasswordHash String
+Birthday Date
+Role String
+Balane Number
+ImageUrl String
+
+Order
+----
+OrderID PK ObjectId
+UserID ObjectId FK - User.UserID
+NonAuthUser String
+Number Number
+Products Array FK - Product.ProductID
+FullPrice Number
+MethodDelivery String 
+CourierID ObjectId FK - User.UserID
+Username String
+Phone Number
+City String
+Street String
+House String
+Apartment String
+Coordinates Array
+Status String
+
+Product as p # 
+------------
+ProductID PK ObjectId
+CategoryID ObjectId FK - Category.CategoryID
+Name String
+Price Number
+Image String
+Composition String
+
+Favorites as f
+----
+FavoriteID PK ObjectId
+UserID ObjectId FK - User.UserID
+ProductID ObjectId FK - Product.ProductID

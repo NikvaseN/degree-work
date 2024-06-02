@@ -17,12 +17,14 @@ import {useContext } from 'react';
 import {Context} from '../Context.jsx';
 import Swal from 'sweetalert2'
 import { escapeHtml } from '../components/functions.jsx'
+import load from "../img/icons/load.gif"
 
 export default function Page({title, category, title_ru, title_header}) {
 	const [data, setData] = React.useState('')
 	const {user, setQuantityCart} = useContext(Context);
 	const [favorites, setFavorites] = React.useState([])
 	const [mobile, setMobile] = React.useState(false)
+	const [pageIsLoad, setPageIsLoad] = React.useState(false)
 
 	// Кол-во тортов
 	const [length, setLength] = React.useState(0)
@@ -39,21 +41,22 @@ export default function Page({title, category, title_ru, title_header}) {
 		let favoritesD = dataFavorites.map(like => like.product && like.product._id ? like.product._id : null).filter(id => id !== null);
 		setFavorites(favoritesD)
 	}
-	React.useEffect(() =>{
+
+	const start = async () => {
 		import(`../components/${title}.css`)
 		document.title = title_ru
-		axios.get(`/products/category/${category}`).then(res =>{		
+		await axios.get(`/products/category/${category}`).then(res =>{		
 			setLength(res.data.length)
 			setData(res.data)
-		}).catch()
+			setPageIsLoad(true)
+		}).catch(() => setPageIsLoad(true))
 		getFavorites()
 		const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 		setMobile(mobile)
-		// axios.get(`/favorite/add/${g}`).then(res =>{		
-		// 	setLength(res.data.length)
-		// 	setData(res.data)
-		// }).catch()
+	}
 
+	React.useEffect(() =>{
+		start()
 	}, [])
 
 	// Кол-во блоков по 2 элемента 
@@ -129,7 +132,6 @@ export default function Page({title, category, title_ru, title_header}) {
 		window.localStorage.setItem('cart', JSON.stringify(cart))
 		closePopUp()
 		setAddedItem(true)
-		
 	}
 
 	const cheackFavorite = (id) =>{
@@ -438,13 +440,14 @@ export default function Page({title, category, title_ru, title_header}) {
 	mainCakes()
 	return (
 		<div className='container'>
-		{/* {!openPopUp&&(
-			<Header/>
-		)} */}
 			<div className={`header-img ${title} _header-mb`}><h1>{title_ru}</h1></div>
 			
 			<div className="main-cakes">
-				{main}
+				{pageIsLoad ? main : 
+				<div className="items-block-cakes">
+					<img src={load} alt="loading" width={'15%'}/>
+				</div>
+				}
 			</div>
 
 			<div className="pagination">

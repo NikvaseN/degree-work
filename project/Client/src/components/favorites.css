@@ -36,6 +36,9 @@
 	gap: 20px;
 	margin-bottom: 30px;
 }
+.favorotes-item._favorites{
+	position: relative;
+}
 .favorites-item-text{
 	display: flex;
 	flex-direction: column;

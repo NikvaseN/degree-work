@@ -130,19 +130,19 @@ export const create = async (req,res) =>{
 				const orders = await OrderModel.find()
 				if(orders.length >= 1){
 					OrderModel.findOne().sort({ number: -1 }).exec(function(err, doc) {
-						if (err) {
-							res(rej)
-						} else {
-							res(doc.number + 1)
-						}
+						if (err) { res(rej) } else { res(doc.number + 1) }
 					})
 				}
 				else{
 					res(1)
-				}
-				
-				}
-			)
+			}})
+		}
+
+		const productsExist = req.body.products.every(product => product.product);
+		if (!productsExist) {
+			return res.status(400).json({
+				msg: 'Невозможно создать заказ с пустым продуктом'
+			});
 		}
 
 		const quantity = await count();

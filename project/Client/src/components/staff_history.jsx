@@ -6,6 +6,7 @@ import load from "../img/icons/delivery.gif"
 import './courier.css'
 import '../components/item_change.css'
 import imgRefresh from '../img/icons/refresh.png'
+import undefined from "../img/icons/undefined.webp"
 
 export default function Courier_History ({mobile, reloadComponent}) {
 	const [isLoad, setIsLoad] = React.useState(false)

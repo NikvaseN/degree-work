@@ -121,11 +121,13 @@ export default function Cart() {
 	}
 	const [fullPrice, setFullPrice] = React.useState(startFullPrice)
 
-	const methodDeliveryDelivery = async () =>{
-		setMethodDelivery('delivery')
-	}
-	const methodDeliveryPickup = async () =>{
-		setMethodDelivery('pickup')
+	const changeMethodDelivery = async (e, method) =>{
+		setMethodDelivery(method)
+
+		let btns = document.getElementsByClassName('_method-delivery')
+		btns = Array.from(btns)
+		btns.forEach(obj => obj.classList.remove('focus'))
+		e.target.classList.add("focus");
 	}
 
 	const checkActiveItem = async (index) =>{
@@ -328,8 +330,8 @@ export default function Cart() {
 				<div className="hr _order-registration"></div>
 				<p className='delivery-title _cart'>Способ доставки</p>
 				<div className="method-delivery-cart _cart" >
-					<button className='btn-add-cart _cart' onClick={() => methodDeliveryDelivery()}>Доставка</button>
-					<button className='btn-add-cart _cart' onClick={() => methodDeliveryPickup()}>Самовывоз</button>
+					<button className='btn-add-cart _cart _method-delivery' onClick={(e) => changeMethodDelivery(e, 'delivery')}>Доставка</button>
+					<button className='btn-add-cart _cart _method-delivery' onClick={(e) => changeMethodDelivery(e, 'pickup')}>Самовывоз</button>
 				</div>
 				{methodDelivery === 'delivery' && (
 				<>

@@ -126,11 +126,11 @@ export default function List_orders({reloadComponent}) {
 
 	let limit = 5
 
-	const getEndedOrders = async (skip) =>{
+	const getEndedOrders = async (skip, reload = true) =>{
 		let fields = {
 			limit, skip
 		}
-		setPageLoad(false)
+		reload && setPageLoad(false)
 		await axios.post('/orders/ended', fields).then(res =>{
 			if (skip !== 0){
 				setOrders((prevData) => [...prevData, ...res.data]);
@@ -138,13 +138,13 @@ export default function List_orders({reloadComponent}) {
 			else{
 				setOrders([...res.data])
 			}
-			setPageLoad(true)
+			reload && setPageLoad(true)
 		}).catch(() => setPageLoad(true))
 	}
 
 	const addEndedOrders = () =>{
 		setSkip((e) => e + limit)
-		getEndedOrders(skip + limit)
+		getEndedOrders(skip + limit, false)
 	}
 
 	//
@@ -152,6 +152,7 @@ export default function List_orders({reloadComponent}) {
 	const changeTarget = async (status, e) =>{
 		if(status !== target){
 			setOpenItems([])
+			setSkip(0)
 			let btns = document.getElementsByClassName('favorites-btn')
 
 			setTarget(status)

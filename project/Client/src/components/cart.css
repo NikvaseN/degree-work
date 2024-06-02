@@ -39,6 +39,11 @@
 	top: 47%;
 	transition: .3s;
 }
+
+.close-item-cart.__favorites{
+	top: 30%;
+}
+
 .close-item-cart:hover{
 	transform: rotate(180deg);
 }
@@ -258,6 +263,10 @@
 	height: 50px;
 }
 
+._method-delivery.focus{
+	color:bisque;
+	font-size: 27px;
+}
 
 @media (max-width: 1200px){
 	.cart-item__img-block._cart>img{

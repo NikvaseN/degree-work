@@ -14,7 +14,7 @@ export default function AppComponents({children}) {
 	return (
 		<>
 		{!hideHeaderFooter && <Header/> }
-		{showWidgetSupport && <Support/>}
+		{/* {showWidgetSupport && <Support/>} */}
 			<div style={{minHeight: "calc(100vh - 75px)"}}>
 				{children}
 			</div>

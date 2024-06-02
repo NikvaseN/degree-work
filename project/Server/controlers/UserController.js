@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator';
 import userModel from '../models/user.js';
 import orderModel from '../models/order.js';
 import mongoose from "mongoose";
+import LikeModel from '../models/like.js'
 
 // Регистрация
 export const register =  async (req,res) =>{
@@ -476,6 +477,11 @@ export const remove = async (req,res) => {
 				msg:"Неверный пароль"
 			})
 		}
+
+		// Удаляем избранное
+        await LikeModel.deleteMany({
+            user: user._id
+        });
 
 		await userModel.deleteOne({_id: accountId});
 	  

@@ -1,4 +1,4 @@
-import {YMaps, SearchControl} from '@pbe/react-yandex-maps';
+import {YMaps} from '@pbe/react-yandex-maps';
 import {useEffect, useState} from 'react';
 import './mapOrders.css'
 import MapOrders from './MapOrders.jsx'
@@ -12,6 +12,7 @@ import {formatPhoneNumber} from './functions.jsx'
 import Swal from 'sweetalert2';
 import imgRefresh from '../img/icons/refresh.png'
 import '../components/item_change.css'
+import undefined from "../img/icons/undefined.webp"
 
 export default function Courier_Orders ({rolled, mobile, reloadComponent}) {
 	const [orders, setOrders] = useState([]);
@@ -177,11 +178,17 @@ export default function Courier_Orders ({rolled, mobile, reloadComponent}) {
 								<h3>Товары</h3>
 							</div>
 							{target && target.products.map((obj) =>(
-								obj.product &&
+								obj.product ?
 								<div key={obj.product._id} className='courier-orders-products' style={{justifyContent: 'space-between'}}>
 									<img src={`${import.meta.env.VITE_IMG_URL}${obj.product.imageUrl}`} alt="" width={70} height={50}/>
 									<h3>{obj.product.name}</h3>
 									<h3>{obj.value} шт.</h3>
+								</div>
+								:
+								<div className='courier-orders-products' style={{justifyContent: 'space-between'}}>
+									<img src={undefined} alt="" width={70} height={50}/>
+									<h3>Товар не найден</h3>
+									<h3>Данный товар больше не продаётся.</h3>
 								</div>
 							))}
 							{!activeOrder.length ?

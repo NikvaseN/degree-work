@@ -1,4 +1,5 @@
 import ProductModel from '../models/product.js';
+import LikeModel from '../models/like.js'
 import mongoose from 'mongoose';
 
 export const getAll = async (req,res) =>{
@@ -49,38 +50,36 @@ export const getCategory = async (req,res) =>{
 	}
 }
 
-export const remove = async (req,res) =>{
-	try{
-		const productId = req.params.id;
-		
-		ProductModel.findOneAndRemove({
-			_id: productId,
-		}, (err, doc) =>{
-			if (err){
-				console.log(err)
-				res.status(500).json({
-				message:"Не удалось удалить продукт"
-				})
-			}
-			
-			if (!doc){
-				return res.status(404).json({
-					message:'Продукт не найдена'
-				});
-			}
+export const remove = async (req, res) => {
+    try {
+        const productId = req.params.id;
 
-			res.json({
-				success: true,
-			})
-		});
+        // Удаляем продукт
+        const deletedProduct = await ProductModel.findOneAndRemove({
+            _id: productId
+        });
 
-	} catch (err){
-		console.log(err)
-		res.status(500).json({
-			message:"Не удалось найти продукт"
-		})
-	}
-}
+        if (!deletedProduct) {
+            return res.status(404).json({
+                message: 'Продукт не найден'
+            });
+        }
+
+        // Удаляем избранное, связанные с удаленным продуктом
+        await LikeModel.deleteMany({
+            product: productId
+        });
+
+        res.json({
+            success: true
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            message: "Не удалось удалить продукт"
+        });
+    }
+};
 
 export const create = async (req,res) =>{
 	try {

@@ -1,19 +1,18 @@
-import Header from '../components/header.jsx';
 import '../components/normalize.css'
 import '../components/history.css'
 import '../styles/statuses.css'
 import load from "../img/icons/load.gif"
 import undefined from "../img/icons/undefined.webp"
-import imgWarning from '../img/icons/warning.png';
 import axios from '../axios.js';
 import sad from '../img/icons/sad-anxious.gif';
 import {Link} from "react-router-dom";
 import React, {useContext} from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import {Context} from '../Context.jsx';
 import { formatDate } from '../components/functions.jsx';
 import { ruStatus } from '../config/statuses.js';
+import { Toast } from '../components/swal.js'
 
 export default function History() {
 	const [historyEmpty, setHistoryEmpty] = React.useState(true)
@@ -167,11 +166,22 @@ export default function History() {
 		return (n + str)
 	}
 	
-	const repeat = (products) =>{
-		window.localStorage.setItem('cart', JSON.stringify(products))
-		let quantity = products.reduce((acc, obj) => acc + obj.value, 0);
-		setQuantityCart(quantity)
-		navigate('/cart')
+	const repeat = (e, products) =>{
+		e.stopPropagation();
+		const filteredProducts = products.filter(product => product.product !== null);
+		if(filteredProducts.length > 0){
+			localStorage.setItem('cart', JSON.stringify(filteredProducts))
+			let quantity = filteredProducts.reduce((acc, obj) => acc + obj.value, 0);
+			setQuantityCart(quantity)
+			navigate('/cart')
+		}
+		else{
+			Toast.fire({
+				icon: "error",
+				title: "Нельзя повторить пустой заказ"
+			});
+		}
+		
 	}
 	
 	const cancel = async (e, id) =>{
@@ -253,7 +263,7 @@ export default function History() {
 								{obj.status === 'new' ?
 									(<div className="repeat cancel" onClick={(e) => cancel(e, obj._id)}>Отменить</div>)
 									:
-									(<div className="repeat" onClick={() => repeat(obj.products)}>Повторить</div>)
+									(<div className="repeat" onClick={(e) => repeat(e, obj.products)}>Повторить</div>)
 								}
 						</div>
 					):(
@@ -264,36 +274,6 @@ export default function History() {
 								<p>{formatDate(obj.createdAt, 'Y-M-D')}</p>
 								<p>{formatDate(obj.createdAt, 'h:m')}</p>
 							</div>
-							{/* {obj.methodDelivery === 'delivery' ? 
-								(<>
-								<div className="history-item-title user">
-									<p>Доставка</p>
-									<p>{obj.username}</p>
-									<p>{obj.phone}</p>
-								</div>
-								<div className="hr-small"></div>
-								<div className="history-item-title">
-								<p>№ 123</p>
-								<p>{`${obj.street}, д. ${obj.house}, кв. ${obj.apartment}`}</p>
-								<p>{day_date[index]}</p>
-								<p>{hour_date[index]}</p>
-							</div>
-								</>
-								)	
-								:(
-									<>
-									<div className="history-item-title center">
-										<p>Самовывоз</p>
-									</div>
-									<div className="hr-small"></div>
-									<div className="history-item-title user">
-										<p>№ 123</p>
-										<p>{day_date[index]}</p>
-										<p>{hour_date[index]}</p>
-									</div>
-								</>
-								)
-							} */}
 							<div className="hr-medium history"></div>
 							{(obj.products).map((obj) => (
 								obj.product ? (
@@ -310,7 +290,7 @@ export default function History() {
 								</div>
 								) :
 								(
-									<div key={obj.product._id} className="cart-item history">
+									<div className="cart-item history">
 										<img src={undefined} alt="" width={300} height={220}/>
 										<div className="cart-item-text">
 											<h2 style={{fontSize : 24, marginTop:15}}>Товар не найден</h2>
@@ -326,7 +306,7 @@ export default function History() {
 								{(user && obj.status === 'new') ?
 								(<button className="btn-repeat cancel history" onClick={(e) => cancel(e, obj._id)}>Отменить</button>)
 								:
-								(<button className="btn-repeat history" onClick={() => repeat(obj.products)}>Повторить</button>)
+								(<button className="btn-repeat history" onClick={(e) => repeat(e, obj.products)}>Повторить</button>)
 							}
 								</div>
 							

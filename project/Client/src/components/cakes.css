@@ -18,10 +18,11 @@
 	margin-top: 50px;
 	margin-bottom: 100px;
 }
+
 .item-cake{
 	height: 500px;
 	width: 550px;
-	/* border: 1px solid black; */
+	animation: page_item_animation 0.3s ease-in;
 }
 
 .item-box{
@@ -189,7 +190,20 @@
 	transform: translateX(-10px)
 	/* bottom: 20px; */
 }
+
 }
+
+@keyframes page_item_animation{
+
+0%{
+	opacity: 0;
+}
+100%{
+	opacity: 1;
+}
+
+}
+
 .liked_animation{
 	animation: like_animation 0.2s ease-in;
 }
